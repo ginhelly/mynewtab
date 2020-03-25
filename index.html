@@ -14,7 +14,7 @@
             width: 80%;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 80px;
+            margin-top: 20px;
         }
 
         .card{
@@ -29,11 +29,36 @@
             max-height:100%;
             border-radius: 20px;
         }
+
+        input[type=search] {
+            width: 100%;
+            box-sizing: border-box;
+            border-style: none;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            background-position: 10px 10px; 
+            background-repeat: no-repeat;
+            padding: 12px 20px 12px 50px;
+            height: 50px;
+            margin: 10px auto
+        }
     </style>
 </head>
 <body>
     <section>
-        Тут будут строки поиска, наверное
+        <div class='card-wrapper'>
+            <form action="https://duckduckgo.com/" placeholder='DuckDuckGo'>
+                <input type="search" name="q" style="
+                background-image: url(images/duck-small.jpg)">
+                <input style='display: none;' type="submit" value="DuckDuckGo">
+            </form>
+            <form action="http://google.com/search" placeholder='Google'>
+                <input type="search" name="q"style="
+                background-image: url(images/google-small.jpg)">
+                <input style='display: none;' type="submit" value="Google">
+            </form>
+        </div>
     </section>
     <section>
         <div class='card-wrapper'>
