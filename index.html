@@ -17,6 +17,10 @@
             margin-top: 20px;
         }
 
+        .card-inner-wrap{
+            display: inline-block;
+        }
+
         .card{
             width: 100px;
             height: 100px;
@@ -47,6 +51,28 @@
             height: 50px;
             margin: 10px auto
         }
+
+        .ribbon {
+            display: inline-block;
+            width: 95px;
+            position: absolute;
+        }
+
+        .ribbon-block{
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #94949e;
+            display: inline-block;
+            width: 100%;
+            margin: 10px 0;
+            border-radius: 10px;
+            padding: 8px;
+        }
+
+        .ribbon-card{
+            display: inherit;
+            width: 45px;
+        }
     </style>
 </head>
 <body>
@@ -64,8 +90,8 @@
             </form>
         </div>
     </section>
-    <section>
-        <div class='card-wrapper'>
+    <section class='card-wrapper'>
+        <div class='card-inner-wrap'>
             <div class='card'> 
                 <a href='https://yandex.com'> <img src='images/yandex.jpg'></a>
                 Яндекс
@@ -103,14 +129,6 @@
                 Я-музыка
             </div>
             <div class='card'> 
-                <a href='https://translate.google.com/'> <img src='images/gtrans.png'></a>
-                Гугл перевод
-            </div>
-            <div class='card'> 
-                <a href='https://translate.yandex.com'> <img src='images/yatrans.png'></a>
-                Я-перевод
-            </div>
-            <div class='card'> 
                 <a href='https://games.mail.ru/pc/news/'> <img src='images/mailru.jpg'></a>
                 Мейл ру
             </div>
@@ -119,16 +137,12 @@
                 Твич
             </div>
             <div class='card'> 
-                <a href='https://drive.google.com/drive/'> <img src='images/gdrive.png'></a>
-                Гугл диск
-            </div>
-            <div class='card'> 
                 <a href='https://stopgame.ru/'> <img src='images/sg.jpg'></a>
                 СГ
             </div>
             <div class='card'> 
                 <a href='https://dtf.ru/'> <img src='images/dtf.png'></a>
-                ДТФ
+                Пикабу
             </div>
             <div class='card'> 
                 <a href='https://yandex.ru/maps/44/izhevsk/?ll=53.211463%2C56.851082&z=13/'> <img src='images/yamaps.jpg'></a>
@@ -163,6 +177,50 @@
                 Дистедью
             </div>
         </div>
+        <div class='ribbon'>
+            <div class='ribbon-block'>
+                <div class='ribbon-card'> 
+                    <a href='https://mail.google.com/mail/u/0/?tab=wm&ogbl#inbox'> <img src='images/ribbon/gmail.png'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://drive.google.com/drive/'> <img src='images/ribbon/gdrive.png'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://colab.research.google.com/'> <img src='images/ribbon/colab.png'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://code.earthengine.google.com/'> <img src='images/ribbon/ee.png'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://developers.google.com/earth-engine/getstarted'> <img style='filter: saturate(7);' src='images/ribbon/ee.png'></a>
+                </div>
+                
+            </div>
+            <div class='ribbon-block'>
+                <div class='ribbon-card'> 
+                    <a href='https://yandex.ru/images/'> <img src='images/ribbon/yaimgs.svg'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://www.kinopoisk.ru/'> <img src='images/ribbon/kp.svg'></a>
+                </div>
+            </div>
+
+            <div class='ribbon-block'>
+                <div class='ribbon-card'> 
+                    <a href='https://translate.google.com/'> <img src='images/ribbon/gtrans.png'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://translate.yandex.com/'> <img src='images/ribbon/yatrans.png'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://www.multitran.com/'> <img src='images/ribbon/multitran.jpg'></a>
+                </div>
+                <div class='ribbon-card'> 
+                    <a href='https://context.reverso.net/translation/english-russian/'> <img src='images/ribbon/reverso.png'></a>
+                </div>
+            </div>
+        </div>
     </section>
+    
 </body>
 </html>
