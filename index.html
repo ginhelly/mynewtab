@@ -69,9 +69,36 @@
             padding: 8px;
         }
 
-        .ribbon-card{
+        .ribbon-card {
             display: inherit;
             width: 45px;
+        }
+
+        .refs {
+            position: absolute;
+            left: 2%;
+            width: 8%;
+            border-style: dashed;
+            border-width: 1px;
+            border-color: #94949e;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 20px;
+        }
+
+        .refs a:link {
+            color: white;
+            text-decoration: none;
+        }
+
+        .refs a:visited {
+            color: white;
+            text-decoration: none;
+        }
+
+        .refs a:hover {
+            color: #222222;
+            background-color: #dededf;
         }
     </style>
 </head>
@@ -89,6 +116,13 @@
                 <input style='display: none;' type="submit" value="Google">
             </form>
         </div>
+    </section>
+    <section class='refs'>
+        <a href='https://getbootstrap.com/docs/4.5/getting-started/introduction/'>Bootstrap</a><br>
+        <a href='https://cesium.com/docs/'>Cesium</a><br>
+        <a href='https://django-leaflet.readthedocs.io/en/latest/'>Django-leaflet</a><br>
+        <a href='https://docs.djangoproject.com/en/3.0/intro/'>Django</a><br>
+        <a href='https://leafletjs.com/reference-1.6.0.html'>Leaflet</a><br>
     </section>
     <section class='card-wrapper'>
         <div class='card-inner-wrap'>
