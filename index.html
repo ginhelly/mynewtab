@@ -320,6 +320,7 @@
         function changeList() {
             stored = localStorage.getItem("myLinks");
             new_stored = prompt("Отредактируй это (мне влом писать другое)", stored);
+            if (new_stored === null) return;
             localStorage.setItem("myLinks", new_stored);
             document.location.reload();
             return
