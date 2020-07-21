@@ -100,6 +100,17 @@
             color: #222222;
             background-color: #dededf;
         }
+
+        .addButton {
+            border: none;
+            padding: 0 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .addButton:hover {
+            background-color: rgb(199, 199, 199);
+        }
     </style>
 </head>
 <body>
@@ -117,7 +128,7 @@
             </form>
         </div>
     </section>
-    <section class='refs'>
+    <section id="refs" class='refs'>
         <a href='https://getbootstrap.com/docs/4.5/getting-started/introduction/'>Bootstrap</a><br>
         <a href='https://cesium.com/docs/'>Cesium</a><br>
         <a href='https://django-leaflet.readthedocs.io/en/latest/'>Django-leaflet</a><br>
@@ -256,5 +267,63 @@
         </div>
     </section>
     
+    <script>
+        window.onload = function() {
+            let addons = localStorage.getItem("myLinks");
+            addAddons(addons);
+            let addButton = document.createElement("input");
+            addButton.setAttribute("type", "button");
+            addButton.setAttribute("class", "addButton");
+            addButton.setAttribute("onclick", "appendValue()");
+            addButton.setAttribute("value", "+");
+            document.getElementById("refs").append(addButton);
+            let changeButton = document.createElement("input");
+            changeButton.setAttribute("type", "button");
+            changeButton.setAttribute("class", "addButton");
+            changeButton.setAttribute("onclick", "changeList()");
+            changeButton.setAttribute("value", "?");
+            document.getElementById("refs").append(changeButton);
+        }
+
+        function addAddons(addons) {
+            if (addons == null) return;
+            addons_list = JSON.parse(addons);
+            let refs = document.getElementById("refs");
+            for (i=0; i<addons_list.length; i++) {
+                let newLink = document.createElement("a");
+                newLink.setAttribute("href", addons_list[i][1]);
+                newLink.innerText = addons_list[i][0];
+                refs.append(newLink);
+                refs.append( document.createElement("br") )
+            }
+            return
+        }
+
+        function appendValue() {
+            stored = localStorage.getItem("myLinks");
+            let addons = [];
+            if (stored != null) {
+                addons = JSON.parse(stored);
+            }
+            let newAddon = [];
+            let x = prompt("Введи название");
+            let y = prompt("Введи ссылку");
+            newAddon.push(x);
+            newAddon.push(y);
+            addons.push(newAddon);
+            toSave = JSON.stringify(addons);
+            localStorage.setItem("myLinks", toSave);
+            document.location.reload();
+            return
+        }
+
+        function changeList() {
+            stored = localStorage.getItem("myLinks");
+            new_stored = prompt("Отредактируй это (мне влом писать другое)", stored);
+            localStorage.setItem("myLinks", new_stored);
+            document.location.reload();
+            return
+        }
+    </script>
 </body>
 </html>
