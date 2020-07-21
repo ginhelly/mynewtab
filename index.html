@@ -302,7 +302,7 @@
         function appendValue() {
             stored = localStorage.getItem("myLinks");
             let addons = [];
-            if (stored != null) {
+            if (JSON.parse(stored) != null) {
                 addons = JSON.parse(stored);
             }
             let newAddon = [];
