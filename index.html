@@ -286,8 +286,8 @@
         }
 
         function addAddons(addons) {
-            if (addons == null) return;
             addons_list = JSON.parse(addons);
+            if (addons == null) return;
             let refs = document.getElementById("refs");
             for (i=0; i<addons_list.length; i++) {
                 let newLink = document.createElement("a");
