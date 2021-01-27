@@ -120,10 +120,33 @@
             border-width: 3px;
             border-color: #cca300;
         }
+
+        .clock-wrapper {
+            position: absolute;
+            width: 14vw;
+            height: 100px;
+            left: 4vw;
+            text-align: center;
+        }
+
+        #clock-main {
+            display: inline;
+            font-size: xx-large;
+        }
+
+        #clock-seconds {
+            display: inline;
+        }
     </style>
 </head>
 <body>
     <section>
+        <div class='clock-wrapper'>
+            <div id='clock-main'>00:00</div>
+            <div id='clock-seconds'>00</div>
+            <div id='clock-date'>01.01.1970</div>
+            <div id='clock-weekday'>Понедельник</div>
+        </div>
         <div class='card-wrapper'>
             <form action="https://duckduckgo.com/" placeholder='DuckDuckGo'>
                 <input type="search" name="q" style="
@@ -278,6 +301,8 @@
     
     <script>
         window.onload = function() {
+            updateTime();
+            setInterval(updateTime, 1000);
             let addons = localStorage.getItem("myLinks");
             addAddons(addons);
             let addButton = document.createElement("input");
@@ -334,6 +359,31 @@
             document.location.reload();
             return
         }
+    </script>
+
+    <script>
+        const WEEKDAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+        const formatterDate = new Intl.DateTimeFormat("ru");
+        const formatterWeekday = new Intl.DateTimeFormat("ru", {
+            weekday: 'long'
+        });
+
+        function updateTime() {
+            let now = Date.now();
+            document.getElementById('clock-date').innerHTML = formatterDate.format(now);
+            document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(now);
+            let main = document.getElementById('clock-main');
+            now = new Date();
+            let hours = now.getUTCHours() + 4;
+            hours = hours >= 24 ? hours - 24 : hours;
+            let minutes = now.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            main.innerHTML = hours + ':' + minutes;
+            let seconds = now.getSeconds();
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            document.getElementById('clock-seconds').innerHTML = seconds;
+        }
+        
     </script>
 </body>
 </html>
