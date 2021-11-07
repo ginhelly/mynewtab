@@ -373,7 +373,7 @@
         });
 
         async function updateTime() {
-            const timeapi = await fetch('http://worldtimeapi.org/api/timezone/Europe/Samara');
+            const timeapi = await fetch('https://worldtimeapi.org/api/timezone/Europe/Samara');
             let timeapiDate = await timeapi.json();
             console.log(timeapiDate)
             let now = new Date(timeapiDate.datetime);
