@@ -148,7 +148,6 @@
     <section>
         <div class='clock-wrapper'>
             <div id='clock-main'>00:00</div>
-            <div id='clock-seconds'>00</div>
             <div id='clock-date'>01.01.1970</div>
             <div id='clock-weekday'>Понедельник</div>
         </div>
@@ -251,10 +250,10 @@
                 <a href='https://distedu.ru/'> <img src='images/udsudist.webp'></a>
                 Дистедью
             </div>
-            <!--div class='card'> 
+            <div class='card'> 
                 <a href='https://airtable.com/'> <img src='images/airtable.webp'></a>
                 Airtable
-            </div-->
+            </div>
         </div>
         <div class='ribbon'>
             <div class='ribbon-block'>
@@ -307,7 +306,7 @@
     <script>
         window.onload = function() {
             updateTime();
-            setInterval(updateTime, 1000);
+            setInterval(updateTime, 1000*60);
             let addons = localStorage.getItem("myLinks");
             addAddons(addons);
             let addButton = document.createElement("input");
@@ -373,20 +372,20 @@
             weekday: 'long'
         });
 
-        function updateTime() {
-            let now = Date.now();
+        async function updateTime() {
+            const timeapi = await fetch('http://worldtimeapi.org/api/timezone/Europe/Samara');
+            let timeapiDate = await timeapi.json();
+            console.log(timeapiDate)
+            let now = new Date(timeapiDate.datetime);
+            console.log(now);
             document.getElementById('clock-date').innerHTML = formatterDate.format(now);
             document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(now);
             let main = document.getElementById('clock-main');
-            now = new Date();
             let hours = now.getUTCHours() + 4;
             hours = hours >= 24 ? hours - 24 : hours;
             let minutes = now.getMinutes();
             minutes = minutes < 10 ? '0' + minutes : minutes;
             main.innerHTML = hours + ':' + minutes;
-            let seconds = now.getSeconds();
-            seconds = seconds < 10 ? '0' + seconds : seconds;
-            document.getElementById('clock-seconds').innerHTML = seconds;
         }
         
     </script>
