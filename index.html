@@ -1,396 +1,564 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Why not?</title>
-    <style>
-        body{
-            background-color: #2a2a2e;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: rgb(219, 219, 219);
-        }
-
-        .card-wrapper{
-            text-align: center;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            margin-top: 20px;
-        }
-
-        .card-inner-wrap{
-            display: inline-block;
-        }
-
-        .card{
-            width: 100px;
-            height: 100px;
-            display: inline-block;
-            margin: 10px;
-        }
-
-        img{
-            max-width:100%;
-            max-height:100%;
-            border-radius: 10px;
-            filter: brightness(80%);
-        }
-
-        input[type=search] {
-            width: 70%;
-            box-sizing: border-box;
-            border-style: solid;
-            border-width: thin;
-            border-color: #5f5f63;
-            border-radius: 4px;
-            font-size: 16px;
-            background-color: #38383d;
-            color: #dededf;
-            background-position: 5px 5px; 
-            background-repeat: no-repeat;
-            padding: 12px 20px 12px 50px;
-            height: 40px;
-            margin: 5px auto
-        }
-
-        .ribbon {
-            display: inline-block;
-            width: 95px;
-            position: absolute;
-        }
-
-        .ribbon-block{
-            border-style: dashed;
-            border-width: 1px;
-            border-color: #94949e;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            width: 100%;
-            margin: 10px 0;
-            border-radius: 10px;
-            padding: 8px;
-        }
-
-        .ribbon-card {
-            width: 40px;
-        }
-
-        .refs {
-            position: absolute;
-            left: 2%;
-            width: 8%;
-            border-style: dashed;
-            border-width: 1px;
-            border-color: #94949e;
-            border-radius: 10px;
-            padding: 10px;
-            margin-top: 20px;
-        }
-
-        .refs a:link {
-            color: white;
-            text-decoration: none;
-        }
-
-        .refs a:visited {
-            color: white;
-            text-decoration: none;
-        }
-
-        .refs a:hover {
-            color: #222222;
-            background-color: #dededf;
-        }
-
-        .addButton {
-            border: none;
-            padding: 0 10px;
-            text-align: center;
-            border-radius: 5px;
-        }
-
-        .addButton:hover {
-            background-color: rgb(199, 199, 199);
-        }
-
-        a img {
-            border-radius: 5px;
-            border-style: solid;
-            border-width: 3px;
-            border-radius: 10px;
-            border-color: rgba(12, 13, 14, 0);
-        }
-        
-        a:focus img {
-            border-color: #cca300;
-        }
-
-        .clock-wrapper {
-            position: absolute;
-            width: 14vw;
-            height: 100px;
-            left: 4vw;
-            text-align: center;
-        }
-
-        #clock-main {
-            display: inline;
-            font-size: xx-large;
-        }
-
-        #clock-seconds {
-            display: inline;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Total Page Layout</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <section>
-        <div class='clock-wrapper'>
-            <div id='clock-main'>00:00</div>
-            <div id='clock-date'>01.01.1970</div>
-            <div id='clock-weekday'>Понедельник</div>
-        </div>
-        <div class='card-wrapper'>
-            <form action="https://duckduckgo.com/" placeholder='DuckDuckGo'>
-                <input type="search" name="q" style="
-                background-image: url(images/duck-small.webp)"
-                autocomplete="off">
-                <input style='display: none;' type="submit" value="DuckDuckGo">
-            </form>
-            <form action="https://google.com/search" placeholder='Google'>
-                <input type="search" name="q" style="
-                background-image: url(images/google-small.webp)"
-                autocomplete="off">
-                <input style='display: none;' type="submit" value="Google">
-            </form>
-            <div style="font-weight:bold">Кот тейк: ваши ментальные проблемы не оправдывают ваши срывы на других. Другие люди это тоже живые люди и они имеют право не любить всех, кто портит им жизнь своей токсичностью.
-Сначала вылечите кукуху, а потом уже эцсамое. Никто из-за вас не обязан записываться в терпилы
-.</div>
-        </div>
-    </section>
-    <section id="refs" class='refs'>
-    </section>
-    <section class='card-wrapper'>
-        <div class='card-inner-wrap'>
-            <div class='card'> 
-                <a href='https://yandex.com'> <img src='images/yandex.webp'></a>
-                Яндекс
+    <div class="container">
+        <!-- Upper Row -->
+        <div class="upper-row">
+            <div class="clocks">
+                <div id='clock-main'>00:00</div>
+                <div id='clock-date'>01.01.1970</div>
+                <div id='clock-weekday'>Понедельник</div>
             </div>
-            <div class='card'> 
-                <a href='https://mail.yandex.ru'> <img style='filter: hue-rotate(132deg);' src='images/yandex.webp'></a>
-                Яндекспочта
-            </div>
-            <div class='card'> 
-                <a href='https://google.ru'> <img src='images/google.webp'></a>
-                Гугл
-            </div>
-            <div class='card'> 
-                <a href='https://io.udsu.ru/uio/portal_iias.present'> <img src='images/udsu.webp'></a>
-                Удгу
-            </div>
-            <div class='card'> 
-                <a href='http://rutracker.org'> <img src='images/rto.webp'></a>
-                РТО
-            </div>
-            <div class='card'> 
-                <a href='http://flibusta.is'> <img src='images/flibusta.webp'></a>
-                Флибуста
-            </div>
-            <div class='card'> 
-                <a href='http://libgen.rs/'> <img src='images/libgen.webp'></a>
-                Ген-либ-рус
-            </div>
-            <div class='card'> 
-                <a href='https://flibs.cloud'> <img src='images/flibs.webp'></a>
-                Флибс
-            </div>
-            <div class='card'> 
-                <a href='https://coursera.org'> <img src='images/coursera.webp'></a>
-                Курсера
-            </div>
-            <div class='card'> 
-                <a href='https://youtube.com/'> <img src='images/youtube.webp'></a>
-                Youtube
-            </div>
-            <div class='card'> 
-                <a href='https://e.mail.ru/inbox'> <img src='images/mailru.webp'></a>
-                Мейл ру
-            </div>
-            <div class='card'> 
-                <a href='https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0'> <img src='images/wiki.webp'></a>
-                Википедия
-            </div>
-            <div class='card'> 
-                <a href='https://dtf.ru/s/weaboo'> <img src='images/dtf.webp'></a>
-                DTF
-            </div>
-            <div class='card'> 
-                <a href='https://yandex.ru/maps/44/izhevsk/?ll=53.211463%2C56.851082&z=13/'> <img src='images/yamaps.webp'></a>
-                Я карты
-            </div>
-            <div class='card'> 
-                <a href='https://www.google.com/maps/'> <img src='images/gmaps.webp'></a>
-                Гугл карты
-            </div>
-            <div class='card'> 
-                <a href='https://www.openstreetmap.org/'> <img src='images/osm.webp'></a>
-                ОSM
-            </div>
-            <div class='card'> 
-                <a href='https://www.khanacademy.org/'> <img src='images/khan.webp'></a>
-                Khan
-            </div>
-            <div class='card'> 
-                <a href='https://github.com/'> <img src='images/github.webp'></a>
-                Гитхаб
-            </div>
-            <div class='card'> 
-                <a href='https://habr.com/ru/feed/'> <img src='images/habr.webp'></a>
-                Хабр
-            </div>
-            <div class='card'> 
-                <a href='https://distedu.ru/'> <img src='images/udsudist.webp'></a>
-                Дистедью
-            </div>
-            <div class='card'> 
-                <a href='https://journal.tinkoff.ru/'> <img src='images/t-j.webp'></a>
-                Т-ж
-            </div>
-        </div>
-        <div class='ribbon'>
-            <div class='ribbon-block'>
-                <div class='ribbon-card'> 
-                    <a href='https://mail.google.com/mail/u/0/?tab=wm&ogbl#inbox'> <img src='images/ribbon/gmail.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://drive.google.com/drive/'> <img src='images/ribbon/gdrive.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://colab.research.google.com/'> <img src='images/ribbon/colab.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://code.earthengine.google.com/'> <img src='images/ribbon/ee.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://developers.google.com/earth-engine/getstarted'> <img style='filter: saturate(7);' src='images/ribbon/ee.webp'></a>
-                </div>
-                
-            </div>
-            <div class='ribbon-block'>
-                <div class='ribbon-card'> 
-                    <a href='https://yandex.ru/images/'> <img src='images/ribbon/yaimgs.svg'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://www.kinopoisk.ru/'> <img src='images/ribbon/kp.svg'></a>
+            <div class="input-section">
+                <form action="https://duckduckgo.com/" placeholder='DuckDuckGo'>
+                    <input type="search" id="searchInput" name="q" autocomplete="off">
+                    <input style='display: none;' type="submit" value="DuckDuckGo">
+                </form>
+                <div class="buttons">
+                    <button class="search-button" onclick="searchGoogle()">
+                        <img src="images/google-small.webp" alt="Google Logo" class="btn-logo">
+                        Google
+                    </button>
+                    <button class="search-button" onclick="searchYoutube()">
+                        <img src="images/youtube.webp" alt="Youtube Logo" class="btn-logo">
+                        Youtube
+                    </button>
+                    <button class="search-button" onclick="searchYandex()">
+                        <img src="images/yandex.webp" alt="Yandex Logo" class="btn-logo">
+                        Yandex
+                    </button>
+                    <button class="search-button" onclick="searchYamaps()">
+                        <img src="images/yamaps.webp" alt="Yandex Maps Logo" class="btn-logo">
+                        Yandex Maps
+                    </button>
                 </div>
             </div>
-
-            <div class='ribbon-block'>
-                <div class='ribbon-card'> 
-                    <a href='https://translate.google.com'> <img src='images/ribbon/gtrans.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://www.deepl.com/translator'> <img src='images/ribbon/deepl.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://translate.yandex.com/'> <img src='images/ribbon/yatrans.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://www.multitran.com/'> <img src='images/ribbon/multitran.webp'></a>
-                </div>
-                <div class='ribbon-card'> 
-                    <a href='https://context.reverso.net/translation/english-russian/'> <img src='images/ribbon/reverso.webp'></a>
+            <div class="user-widget">
+                <div class="user-widget-content">
+                    <div class="buttons">
+                        Мой IP адрес:
+                        <button class="search-button" onclick="fetchIP()">1</button>
+                        <button class="search-button" onclick="fetchIP2()">2</button>
+                    </div>
+                    <h3 id="myIP"></h3>
                 </div>
             </div>
         </div>
-    </section>
-    
-    <script>
-        window.onload = function() {
-            updateTime();
-            setInterval(updateTime, 1000*60);
-            let addons = localStorage.getItem("myLinks");
-            addAddons(addons);
-            let addButton = document.createElement("input");
-            addButton.setAttribute("type", "button");
-            addButton.setAttribute("class", "addButton");
-            addButton.setAttribute("onclick", "appendValue()");
-            addButton.setAttribute("value", "+");
-            document.getElementById("refs").append(addButton);
-            let changeButton = document.createElement("input");
-            changeButton.setAttribute("type", "button");
-            changeButton.setAttribute("class", "addButton");
-            changeButton.setAttribute("onclick", "changeList()");
-            changeButton.setAttribute("value", "?");
-            document.getElementById("refs").append(changeButton);
-        }
 
-        function addAddons(addons) {
-            addons_list = JSON.parse(addons);
-            if (addons_list == null) return;
-            let refs = document.getElementById("refs");
-            for (i=0; i<addons_list.length; i++) {
-                let newLink = document.createElement("a");
-                newLink.setAttribute("href", addons_list[i][1]);
-                newLink.innerText = addons_list[i][0];
-                refs.append(newLink);
-                refs.append( document.createElement("br") )
-            }
-            return
-        }
-
-        function appendValue() {
-            stored = localStorage.getItem("myLinks");
-            let addons = [];
-            if (JSON.parse(stored) != null) {
-                addons = JSON.parse(stored);
-            }
-            let newAddon = [];
-            let x = prompt("Введи название");
-            let y = prompt("Введи ссылку");
-            newAddon.push(x);
-            newAddon.push(y);
-            addons.push(newAddon);
-            toSave = JSON.stringify(addons);
-            localStorage.setItem("myLinks", toSave);
-            document.location.reload();
-            return
-        }
-
-        function changeList() {
-            stored = localStorage.getItem("myLinks");
-            new_stored = prompt("Отредактируй это (мне влом писать другое)", stored);
-            if (new_stored === null) return;
-            localStorage.setItem("myLinks", new_stored);
-            document.location.reload();
-            return
-        }
-    </script>
-
-    <script>
-        const WEEKDAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-        const formatterDate = new Intl.DateTimeFormat("ru");
-        const formatterWeekday = new Intl.DateTimeFormat("ru", {
-            weekday: 'long'
-        });
-
-        async function updateTime() {
-            const timeapi = await fetch('https://worldtimeapi.org/api/timezone/Europe/Samara');
-            let timeapiDate = await timeapi.json();
-            console.log(timeapiDate)
-            let now = new Date(timeapiDate.datetime);
-            console.log(now);
-            document.getElementById('clock-date').innerHTML = formatterDate.format(now);
-            document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(now);
-            let main = document.getElementById('clock-main');
-            let hours = now.getUTCHours() + 4;
-            hours = hours >= 24 ? hours - 24 : hours;
-            let minutes = now.getMinutes();
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            main.innerHTML = hours + ':' + minutes;
-        }
+        <!-- Lower Row -->
+        <div class="lower-row">
+            <div class="todo-list">
+                <input type="text" id="todoInput" placeholder="Новая заметка">
+                <!--button id="addTodoButton" class="search-button">Добавить</button-->
+                <ul id="todoList"></ul>
+            </div>
+            <div class="main-container">
+                <div class='card'> 
+                    <a href='https://yandex.com'> <img src='images/yandex.webp'></a>
+                    Яндекс
+                </div>
+                <div class='card'> 
+                    <a href='https://mail.yandex.ru'> <img style='filter: hue-rotate(132deg);' src='images/yandex.webp'></a>
+                    Яндекспочта
+                </div>
+                <div class='card'> 
+                    <a href='https://google.ru'> <img src='images/google.webp'></a>
+                    Гугл
+                </div>
+                <div class='card'> 
+                    <a href='https://io.udsu.ru/uio/portal_iias.present'> <img src='images/udsu.webp'></a>
+                    Удгу
+                </div>
+                <div class='card'> 
+                    <a href='http://rutracker.org'> <img src='images/rto.webp'></a>
+                    РТО
+                </div>
+                <div class='card'> 
+                    <a href='http://flibusta.is'> <img src='images/flibusta.webp'></a>
+                    Флибуста
+                </div>
+                <div class='card'> 
+                    <a href='http://libgen.rs/'> <img src='images/libgen.webp'></a>
+                    Ген-либ-рус
+                </div>
+                <div class='card'> 
+                    <a href='https://flibs.cloud'> <img src='images/flibs.webp'></a>
+                    Флибс
+                </div>
+                <div class='card'> 
+                    <a href='https://coursera.org'> <img src='images/coursera.webp'></a>
+                    Курсера
+                </div>
+                <div class='card'> 
+                    <a href='https://youtube.com/'> <img src='images/youtube.webp'></a>
+                    Youtube
+                </div>
+                <div class='card'> 
+                    <a href='https://e.mail.ru/inbox'> <img src='images/mailru.webp'></a>
+                    Мейл ру
+                </div>
+                <div class='card'> 
+                    <a href='https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0'> <img src='images/wiki.webp'></a>
+                    Википедия
+                </div>
+                <div class='card'> 
+                    <a href='https://dtf.ru/s/weaboo'> <img src='images/dtf.webp'></a>
+                    DTF
+                </div>
+                <div class='card'> 
+                    <a href='https://yandex.ru/maps/44/izhevsk/?ll=53.211463%2C56.851082&z=13/'> <img src='images/yamaps.webp'></a>
+                    Я карты
+                </div>
+                <div class='card'> 
+                    <a href='https://www.google.com/maps/'> <img src='images/gmaps.webp'></a>
+                    Гугл карты
+                </div>
+                <div class='card'> 
+                    <a href='https://www.openstreetmap.org/'> <img src='images/osm.webp'></a>
+                    ОSM
+                </div>
+                <div class='card'> 
+                    <a href='https://www.khanacademy.org/'> <img src='images/khan.webp'></a>
+                    Khan
+                </div>
+                <div class='card'> 
+                    <a href='https://github.com/'> <img src='images/github.webp'></a>
+                    Гитхаб
+                </div>
+                <div class='card'> 
+                    <a href='https://habr.com/ru/feed/'> <img src='images/habr.webp'></a>
+                    Хабр
+                </div>
+                <div class='card'> 
+                    <a href='https://distedu.ru/'> <img src='images/udsudist.webp'></a>
+                    Дистедью
+                </div>
+                <div class='card'> 
+                    <a href='https://journal.tinkoff.ru/'> <img src='images/t-j.webp'></a>
+                    Т-ж
+                </div>
+                <div class='card'> 
+                    <a href='https://yandex.ru/pogoda/'> <img src='images/yaweather.webp'></a>
+                    Я погода
+                </div>
+                <div class='card'> 
+                    <a href='https://duckduckgo.com/chat'> <img src='images/duckchat.webp'></a>
+                    Duck chat
+                </div>
+            </div>
+            <div class="icon-placeholder">
+                <div class='ribbon'>
+                    <div class='ribbon-block'>
+                        <div class='ribbon-card'> 
+                            <a href='https://mail.google.com/mail/u/0/?tab=wm&ogbl#inbox'> <img src='images/ribbon/gmail.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://drive.google.com/drive/'> <img src='images/ribbon/gdrive.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://colab.research.google.com/'> <img src='images/ribbon/colab.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://code.earthengine.google.com/'> <img src='images/ribbon/ee.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://developers.google.com/earth-engine/getstarted'> <img style='filter: saturate(7);' src='images/ribbon/ee.webp'></a>
+                        </div>
+                        
+                    </div>
+                    <div class='ribbon-block'>
+                        <div class='ribbon-card'> 
+                            <a href='https://yandex.ru/images/'> <img src='images/ribbon/yaimgs.svg'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://www.kinopoisk.ru/'> <img src='images/ribbon/kp.svg'></a>
+                        </div>
+                    </div>
         
-    </script>
+                    <div class='ribbon-block'>
+                        <div class='ribbon-card'> 
+                            <a href='https://translate.google.com'> <img src='images/ribbon/gtrans.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://www.deepl.com/translator'> <img src='images/ribbon/deepl.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://translate.yandex.com/'> <img src='images/ribbon/yatrans.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://www.multitran.com/'> <img src='images/ribbon/multitran.webp'></a>
+                        </div>
+                        <div class='ribbon-card'> 
+                            <a href='https://context.reverso.net/translation/english-russian/'> <img src='images/ribbon/reverso.webp'></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    background-color: #1e1e1e; /* Dark background */
+    color: #ffffff; /* Light text color */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.upper-row, .lower-row {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    gap: 5px;
+}
+
+.lower-row {
+    grid-template-columns: 1.3fr 6fr 1fr !important;
+}
+
+.input-section, .todo-list {
+    padding: 20px;
+    background-color: #2a2a2a;
+    border-radius: 8px;
+}
+
+.user-widget {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;    /* Center vertically */
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.clocks {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+#clock-main {
+    display: inline;
+    font-size: xx-large;
+}
+
+#clock-seconds {
+    display: inline;
+}
+
+h2 {
+    margin-bottom: 10px;
+}
+
+.input-section input {
+    display: block;
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    border: 1px solid #5f5f63;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: #38383d;
+    color: #dededf;
+    background-image: url(images/duck-small.webp);
+    background-position: 5px 5px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 50px;
+    height: 40px;
+}
+
+.buttons {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    background-color: #444;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: #505050;
+}
+
+.btn-logo {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-evenly;
+    row-gap: 25px;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.card {
+    border-radius: 4px;
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    text-align: center;
+}
+
+img{
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+    filter: brightness(80%);
+}
+
+#todoInput {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #444444; /* Dark input background */
+    color: #ffffff; /* Light input text */
+}
+
+.todo-list ul {
+    list-style-type: none;
+}
+
+.icon-placeholder {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.ribbon {
+    display: inline-block;
+}
+
+.ribbon-block {
+    border-style: dashed;
+    border-width: 1px;
+    border-color: #94949e;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+    margin: 10px 0;
+    border-radius: 10px;
+    padding: 8px;
+}
+
+.ribbon-card {
+    width: 40px;
+}
+
+#todoList {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #1e1e1e; /* Darker background for list items */
+    border-radius: 5px;
+}
+li button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff; /* Light button text */
+    cursor: pointer;
+    background-color: #f44336; /* Red remove button */
+}
+li button:hover {
+    background-color: #c62828; /* Darker red on hover */
+}
+    </style>
+
+<script>
+const UPDATE_INTERVAL = 1000 * 60;
+window.onload = function() {
+    updateTime();
+    setInterval(updateTime, UPDATE_INTERVAL);
+}
+    
+const WEEKDAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+const formatterDate = new Intl.DateTimeFormat("ru");
+const formatterWeekday = new Intl.DateTimeFormat("ru", {
+    weekday: 'long'
+});
+
+let now = null;
+
+async function getTimeFromApi() {
+    /*const timeapi = await fetch('https://worldtimeapi.org/api/timezone/Europe/Samara');
+    let timeapiDate = await timeapi.json();
+    console.log(timeapiDate)
+    now = new Date(timeapiDate.datetime);*/
+    now = new Date();
+}
+
+async function getRealTime() {
+    if (now == null) {
+        await getTimeFromApi()
+    } else {
+        now = new Date(now.getTime() + UPDATE_INTERVAL)
+    }
+    console.log('TIME', now)
+}
+
+async function updateTime() {
+    await getRealTime()
+    if (now) {
+        document.getElementById('clock-date').innerHTML = formatterDate.format(now);
+        document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(now);
+        let main = document.getElementById('clock-main');
+        let hours = now.getUTCHours() + 4;
+        hours = hours >= 24 ? hours - 24 : hours;
+        let minutes = now.getMinutes();
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        main.innerHTML = hours + ':' + minutes;
+    }
+}
+
+function searchOnline(baseSearchUrl) {
+    const searchInput = document.getElementById('searchInput').value;
+    const encodedSearchInput = encodeURIComponent(searchInput);
+
+    const searchUrl = `${baseSearchUrl}${encodedSearchInput}`;
+    window.location.href = searchUrl;
+}
+
+function searchGoogle() {
+    searchOnline('https://www.google.com/search?q=');
+}
+
+function searchYoutube() {
+    searchOnline('https://www.youtube.com/results?search_query=');
+}
+
+function searchYandex() {
+    searchOnline('https://ya.ru/search/?text=');
+}
+
+function searchYamaps() {
+    searchOnline('https://yandex.ru/maps/44/izhevsk/search/');
+}
+
+
+function loadTodos() {
+    const todos = JSON.parse(localStorage.getItem('todos')) || [];
+    const todoList = document.getElementById('todoList');
+    todoList.innerHTML = ''; // Clear the list before loading
+
+    todos.forEach((todo, index) => {
+        const li = document.createElement('li');
+        li.textContent = todo;
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'X';
+        removeButton.onclick = () => removeTodo(index);
+        li.appendChild(removeButton);
+        todoList.appendChild(li);
+    });
+}
+
+// Function to add a new todo
+function addTodo() {
+    const todoInput = document.getElementById('todoInput');
+    const todoText = todoInput.value.trim();
+    if (todoText === '') return;
+
+    const todos = JSON.parse(localStorage.getItem('todos')) || [];
+    todos.push(todoText);
+    localStorage.setItem('todos', JSON.stringify(todos));
+    todoInput.value = ''; // Clear input
+    loadTodos(); // Refresh the list
+}
+
+// Function to remove a todo
+function removeTodo(index) {
+    const todos = JSON.parse(localStorage.getItem('todos')) || [];
+    todos.splice(index, 1);
+    localStorage.setItem('todos', JSON.stringify(todos));
+    loadTodos(); // Refresh the list
+}
+
+function fetchIP() {
+    fetch('https://api.ipify.org?format=json')
+        .then(response => {
+            if (!response.ok) {
+                alert('Не достучались до API');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById('myIP').textContent = `${data.ip}`;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+function fetchIP2() {
+    fetch('https://ipapi.co/json/')
+        .then(response => {
+            if (!response.ok) {
+                alert('Не достучались до API');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const res = `${data.ip} (${data.country_name}: ${data.city} | ${data.org})`
+            document.getElementById('myIP').textContent = res;
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+// Event listeners
+//document.getElementById('addTodoButton').addEventListener('click', addTodo);
+document.getElementById('todoInput').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') { // Check if the pressed key is Enter
+        addTodo(); // Call the addTodo function
+    }
+});
+window.addEventListener('load', loadTodos);
+
+</script>
 </body>
 </html>
