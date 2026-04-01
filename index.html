@@ -595,14 +595,56 @@ function removeTodo(index) {
 function fetchIP2() {
     fetch('https://ipapi.co/json/')
         .then(response => {
-            if (!response.ok) { alert('Не достучались до API'); }
+            if (!response.ok) {
+                throw new Error('ipapi.co вернул ошибку');
+            }
             return response.json();
         })
         .then(data => {
-            document.getElementById('myIP').textContent =
+            document.getElementById('myIP').textContent = 
                 `${data.ip} (${data.country_name}: ${data.city} | ${data.org})`;
         })
-        .catch(error => console.error('Fetch error:', error));
+        .catch(error => {
+            console.error('ipapi.co error:', error);
+            fetch('https://ipinfo.io/json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('ipinfo.io вернул ошибку');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const countryName = getCountryName(data.country);
+                    const city = data.city || 'Неизвестный город';
+                    const org = data.org || 'Неизвестный провайдер';
+                    
+                    document.getElementById('myIP').textContent = 
+                        `${data.ip} (${countryName}: ${city} | ${org})`;
+                })
+                .catch(fallbackError => {
+                    console.error('ipinfo.io error:', fallbackError);
+                    document.getElementById('myIP').textContent = 
+                        'Не удалось определить IP. Проверьте подключение.';
+                });
+        });
+}
+
+function getCountryName(countryCode) {
+    const countries = {
+        'RU': 'Россия',
+        'US': 'США',
+        'GB': 'Великобритания',
+        'DE': 'Германия',
+        'FR': 'Франция',
+        'IT': 'Италия',
+        'ES': 'Испания',
+        'CN': 'Китай',
+        'JP': 'Япония',
+        'KR': 'Южная Корея',
+        'NL': 'Нидерланды'
+    };
+    
+    return countries[countryCode] || countryCode;
 }
 
 document.getElementById('todoInput').addEventListener('keydown', function(event) {
