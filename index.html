@@ -506,46 +506,32 @@ a:focus img {
     </style>
 
 <script>
-const UPDATE_INTERVAL = 1000 * 60;
+const UPDATE_INTERVAL = 1000 * 15;
+const TIMEZONE_OFFSET = 4; // UTC+4
+
 window.onload = function() {
     updateTime();
     setInterval(updateTime, UPDATE_INTERVAL);
 }
 
 const WEEKDAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-const formatterDate = new Intl.DateTimeFormat("ru");
+const formatterDate = new Intl.DateTimeFormat("ru", { day: 'numeric', month: 'long' });
 const formatterWeekday = new Intl.DateTimeFormat("ru", { weekday: 'long' });
 
-let now = null;
-
-async function getTimeFromApi() {
-    const timeapi = await fetch('https://worldtimeapi.org/api/timezone/Europe/Samara');
-    let timeapiDate = await timeapi.json();
-    console.log(timeapiDate);
-    now = new Date(timeapiDate.datetime);
-}
-
-async function getRealTime() {
-    if (now == null) {
-        await getTimeFromApi();
-    } else {
-        now = new Date(now.getTime() + UPDATE_INTERVAL);
-    }
-    console.log('TIME', now);
-}
-
-async function updateTime() {
-    await getRealTime();
-    if (now) {
-        document.getElementById('clock-date').innerHTML = formatterDate.format(now);
-        document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(now);
-        let main = document.getElementById('clock-main');
-        let hours = now.getUTCHours() + 4;
-        hours = hours >= 24 ? hours - 24 : hours;
-        let minutes = now.getMinutes();
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        main.innerHTML = hours + ':' + minutes;
-    }
+function updateTime() {
+    const now = new Date();
+    
+    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const localTime = new Date(utcTime + (TIMEZONE_OFFSET * 3600000));
+    
+    document.getElementById('clock-date').innerHTML = formatterDate.format(localTime);
+    document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(localTime);
+    
+    let hours = localTime.getHours();
+    let minutes = localTime.getMinutes();
+    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    
+    document.getElementById('clock-main').innerHTML = timeStr;
 }
 
 function searchOnline(baseSearchUrl) {
