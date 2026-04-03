@@ -1,6 +1,5 @@
 /**
  * Точка входа приложения
- * Инициализация всех модулей
  */
 
 import Clock from './modules/clock.js';
@@ -8,21 +7,50 @@ import WeatherWidget from './modules/weather.js';
 import TodoList from './modules/todo.js';
 import SearchModule from './modules/search.js';
 import Storage from './utils/storage.js';
+import LocationDetector from './utils/locationDetector.js';
 
-// Конфигурация приложения
 const CONFIG = {
-    timezone: 4, // UTC+4 (Самара/Ижевск)
+    timezone: 4,
     defaultWeatherLocation: 'Izhevsk'
 };
 
-/**
- * Модуль IP-адреса (простой, не требует отдельного файла)
- */
-class IPWidget {
-    constructor() {
+const locationDetector = new LocationDetector();
+
+function updateSectionsHighlight(isLocal, source) {
+    const outerSection = document.querySelector('.net-section.outer');
+    const localSection = document.querySelector('.net-section.local');
+    
+    if (!outerSection || !localSection) return;
+    
+    if (isLocal) {
+        outerSection.style.opacity = '0.5';
+        outerSection.style.filter = 'grayscale(0.3)';
+        localSection.style.opacity = '1';
+        localSection.style.filter = 'none';
+        
+        outerSection.classList.add('dimmed');
+        localSection.classList.remove('dimmed');
+        localSection.classList.add('highlighted');
+        outerSection.classList.remove('highlighted');
+    } else {
+        outerSection.style.opacity = '1';
+        outerSection.style.filter = 'none';
+        localSection.style.opacity = '0.5';
+        localSection.style.filter = 'grayscale(0.3)';
+        
+        outerSection.classList.add('highlighted');
+        localSection.classList.add('dimmed');
+        outerSection.classList.remove('dimmed');
+        localSection.classList.remove('highlighted');
+    }
+}
+
+class NetworkWidget {
+    constructor(detector) {
         this.element = document.getElementById('myIP');
         this.button = document.getElementById('fetchIPBtn');
         this.isLoading = false;
+        this.detector = detector;
     }
 
     init() {
@@ -45,21 +73,39 @@ class IPWidget {
         }
 
         try {
-            // Пробуем ipapi.co
             const response = await fetch('https://ipapi.co/json/');
-            if (!response.ok) throw new Error('ipapi failed');
+            if (!response.ok) throw new Error('primary failed');
             
             const data = await response.json();
-            this.display(data.ip, data.country_name, data.city, data.org);
+            
+            const positionData = {
+                address: data.ip,
+                region: data.country_code === 'RU' ? 'local' : 'remote',
+                regionName: data.country_name,
+                city: data.city,
+                provider: data.org
+            };
+            
+            this.detector.detectByPosition(positionData);
+            this.display(positionData);
+            
         } catch (error) {
-            // Fallback на ipinfo.io
             try {
                 const response = await fetch('https://ipinfo.io/json');
-                if (!response.ok) throw new Error('ipinfo failed');
+                if (!response.ok) throw new Error('secondary failed');
                 
                 const data = await response.json();
-                const country = this.getCountryName(data.country);
-                this.display(data.ip, country, data.city, data.org);
+                const positionData = {
+                    address: data.ip,
+                    region: data.country === 'RU' ? 'local' : 'remote',
+                    regionName: this.getRegionName(data.country),
+                    city: data.city,
+                    provider: data.org
+                };
+                
+                this.detector.detectByPosition(positionData);
+                this.display(positionData);
+                
             } catch (fallbackError) {
                 this.showError();
             }
@@ -72,57 +118,58 @@ class IPWidget {
         }
     }
 
-    display(ip, country, city, org) {
+    display(data) {
         if (this.element) {
-            this.element.textContent = `${ip} (${country}: ${city} | ${org})`;
+            this.element.textContent = `${data.address} (${data.regionName}: ${data.city} | ${data.provider})`;
         }
     }
 
     showError() {
         if (this.element) {
-            this.element.textContent = 'Не удалось определить IP';
+            this.element.textContent = 'Не удалось определить';
         }
     }
 
-    getCountryName(code) {
-        const countries = {
-            'RU': 'Россия',
-            'US': 'США',
-            'GB': 'Великобритания',
-            'DE': 'Германия',
-            'FR': 'Франция',
-            'IT': 'Италия',
-            'ES': 'Испания',
-            'CN': 'Китай',
-            'JP': 'Япония',
-            'KR': 'Южная Корея',
-            'NL': 'Нидерланды'
+    getRegionName(code) {
+        const regions = {
+            'RU': 'Местный',
+            'US': 'Внешний',
+            'GB': 'Внешний',
+            'DE': 'Внешний',
+            'FR': 'Внешний',
+            'IT': 'Внешний',
+            'ES': 'Внешний',
+            'CN': 'Внешний',
+            'JP': 'Внешний',
+            'KR': 'Внешний',
+            'NL': 'Внешний'
         };
-        return countries[code] || code;
+        return regions[code] || code;
     }
 }
 
-/**
- * Инициализация приложения
- */
 function initApp() {
-    console.log('[App] Инициализация...');
+    const initialStatus = locationDetector.detectLocalBrowser();
+    updateSectionsHighlight(initialStatus, locationDetector.getSource());
+    
+    locationDetector.subscribe((isLocal, source) => {
+        if (source === 'network') {
+            updateSectionsHighlight(isLocal, source);
+        }
+    });
 
-    // 1. Часы
     const clock = new Clock({
         timezoneOffset: CONFIG.timezone,
         updateInterval: 1000
     });
     clock.start();
 
-    // 2. Поиск
     const search = new SearchModule({
         maxHistory: 10,
         shortcuts: true
     });
     search.init();
 
-    // Привязываем кнопки поиска
     document.querySelectorAll('.search-button[data-engine]').forEach(btn => {
         const engine = btn.dataset.engine;
         btn.addEventListener('click', () => {
@@ -135,38 +182,32 @@ function initApp() {
         });
     });
 
-    // 3. Погода
     const weather = new WeatherWidget({
         defaultLocation: CONFIG.defaultWeatherLocation,
-        cacheMaxAge: 24 * 60 * 60 * 1000 // 24 часа
+        cacheMaxAge: 24 * 60 * 60 * 1000
     });
     weather.init();
 
-    // 4. Todo
     const todo = new TodoList({
         maxItems: 100
     });
     todo.init();
 
-    // 5. IP виджет
-    const ipWidget = new IPWidget();
-    ipWidget.init();
+    const networkWidget = new NetworkWidget(locationDetector);
+    networkWidget.init();
 
-    // Экспорт в глобальную область для отладки
     window.app = {
         clock,
         search,
         weather,
         todo,
-        ipWidget,
+        networkWidget,
+        locationDetector,
         storage: Storage,
         config: CONFIG
     };
-
-    console.log('[App] Готово! Доступно через window.app');
 }
 
-// Запуск при загрузке DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initApp);
 } else {

@@ -185,49 +185,163 @@ class WeatherWidget {
     }
 
     async tryMultipleApis() {
-        // Пробуем wttr.in
+        // Пробуем wttr.in с полной обработкой всех ошибок
+        let wttrSuccess = false;
+        
         try {
+            console.log('[Weather] Пробуем wttr.in...');
             const data = await this.fetchWttrIn();
-            if (data) return data;
+            if (data) {
+                console.log('[Weather] wttr.in успешно');
+                return data;
+            }
+            wttrSuccess = true;
         } catch (error) {
-            console.error('[Weather] wttr.in error:', error);
+            console.error('[Weather] wttr.in критическая ошибка:', error.message);
+            console.error('[Weather] Тип ошибки:', error.name);
         }
-
-        // Fallback на Open-Meteo
-        try {
-            const data = await this.fetchOpenMeteo();
-            if (data) return data;
-        } catch (error) {
-            console.error('[Weather] Open-Meteo error:', error);
+        
+        // Если wttr.in не вернул данные (любая причина) — пробуем Open-Meteo
+        if (!wttrSuccess) {
+            console.log('[Weather] Переключение на Open-Meteo...');
+            try {
+                const data = await this.fetchOpenMeteo();
+                if (data) {
+                    console.log('[Weather] Open-Meteo успешно');
+                    return data;
+                }
+            } catch (error) {
+                console.error('[Weather] Open-Meteo ошибка:', error.message);
+            }
         }
-
+        
+        console.log('[Weather] Все API недоступны');
         return null;
     }
 
     async fetchWttrIn() {
-        const url = `https://wttr.in/${encodeURIComponent(this.currentLocation)}?format=j1`;
-        
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('wttr.in вернул ошибку');
-        
-        const data = await response.json();
-        const current = data.current_condition[0];
-        
-        return {
-            temp: `${current.temp_C}°C`,
-            feelsLike: `${current.FeelsLikeC}°C`,
-            description: current.lang_ru?.[0]?.value || current.weatherDesc[0].value,
-            wind: `${current.windspeedKmph} км/ч`,
-            humidity: `${current.humidity}%`,
-            location: data.nearest_area[0].areaName[0].value,
-            source: 'wttr.in'
+        const baseUrl = `https://wttr.in/${encodeURIComponent(this.currentLocation)}?format=j1`;
+
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const parseWeather = (text) => {
+            if (!text || typeof text !== 'string') {
+                throw new Error('Пустой ответ');
+            }
+
+            if (text.length < 100) {
+                throw new Error('Ответ слишком короткий');
+            }
+
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch {
+                throw new Error('Невалидный JSON');
+            }
+
+            if (!data || typeof data !== 'object') {
+                throw new Error('Ответ не является объектом');
+            }
+
+            if (!data.current_condition || !data.current_condition[0]) {
+                throw new Error('Нет current_condition');
+            }
+
+            if (!data.nearest_area?.[0]?.areaName?.[0]?.value) {
+                throw new Error('Нет локации');
+            }
+
+            const current = data.current_condition[0];
+
+            if (current.temp_C == null || current.FeelsLikeC == null) {
+                throw new Error('Нет температуры');
+            }
+
+            return {
+                temp: `${current.temp_C}°C`,
+                feelsLike: `${current.FeelsLikeC}°C`,
+                description: current.lang_ru?.[0]?.value || current.weatherDesc?.[0]?.value || 'Неизвестно',
+                wind: `${current.windspeedKmph || 0} км/ч`,
+                humidity: `${current.humidity || 0}%`,
+                location: data.nearest_area[0].areaName[0].value,
+                source: 'wttr.in'
+            };
         };
+
+        const makeAttempt = async (attempt) => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+            try {
+                const response = await fetch(baseUrl, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-store',
+                    redirect: 'follow',
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                console.log(`[Weather] wttr.in попытка ${attempt}, статус:`, response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const text = await response.text();
+                console.log(`[Weather] wttr.in попытка ${attempt}, байт:`, text.length);
+
+                try {
+                    return parseWeather(text);
+                } catch (parseError) {
+                    console.error(`[Weather] wttr.in попытка ${attempt}, плохой ответ:`, parseError.message);
+                    console.error('[Weather] Начало ответа:', text.slice(0, 200));
+                    console.error('[Weather] Конец ответа:', text.slice(-200));
+                    throw parseError;
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+
+                if (error.name === 'AbortError') {
+                    throw new Error('Таймаут запроса');
+                }
+
+                if (error instanceof TypeError) {
+                    throw new Error('CORS или сетевая ошибка');
+                }
+
+                throw error;
+            }
+        };
+
+        try {
+            return await makeAttempt(1);
+        } catch (firstError) {
+            console.warn('[Weather] Первая попытка не удалась:', firstError.message);
+
+            if (firstError.message === 'CORS или сетевая ошибка') {
+                throw firstError;
+            }
+
+            await sleep(250);
+
+            try {
+                return await makeAttempt(2);
+            } catch (secondError) {
+                console.error('[Weather] Вторая попытка тоже не удалась:', secondError.message);
+                throw secondError;
+            }
+        }
     }
 
     async fetchOpenMeteo() {
         // Геокодинг
-        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(this.currentLocation)}&count=1&language=ru&format=json`;
-        const geoResponse = await fetch(geoUrl);
+        const cacheBuster = Date.now();
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(this.currentLocation)}&count=1&language=ru&format=json&_=${cacheBuster}`;
+        
+        const geoResponse = await fetch(geoUrl, { cache: 'no-store' });
         const geoData = await geoResponse.json();
         
         if (!geoData.results?.[0]) {
@@ -237,8 +351,8 @@ class WeatherWidget {
         const { latitude, longitude, name, country } = geoData.results[0];
         
         // Получаем погоду
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`;
-        const weatherResponse = await fetch(weatherUrl);
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto&_=${Date.now()}`;
+        const weatherResponse = await fetch(weatherUrl, { cache: 'no-store' });
         const weatherData = await weatherResponse.json();
         
         const current = weatherData.current_weather;
