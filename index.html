@@ -4,1212 +4,178 @@
     <meta charset="UTF-8">
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Персональная стартовая страница">
     <title>Why not still?</title>
+    
+    <!-- Стили -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 </head>
 <body>
     <div class="container">
-        <!-- Upper Row -->
+        <!-- Верхний ряд: Часы | Поиск | IP -->
         <div class="upper-row">
+            <!-- Часы -->
             <div class="clocks">
-                <div id='clock-main'>00:00</div>
-                <div id='clock-date'>01.01.1970</div>
-                <div id='clock-weekday'>Понедельник</div>
+                <div id="clock-main">00:00</div>
+                <div id="clock-date">01.01.1970</div>
+                <div id="clock-weekday">Понедельник</div>
             </div>
+
+            <!-- Поиск -->
             <div class="input-section">
-                <form action="https://duckduckgo.com/" placeholder='DuckDuckGo'>
-                    <input type="search" id="searchInput" name="q" autocomplete="off">
-                    <input style='display: none;' type="submit" value="DuckDuckGo">
+                <form action="https://duckduckgo.com/" method="GET">
+                    <input 
+                        type="search" 
+                        id="searchInput" 
+                        name="q" 
+                        autocomplete="off"
+                        placeholder="Поиск в DuckDuckGo..."
+                        aria-label="Поисковый запрос"
+                    >
+                    <input type="submit" hidden value="DuckDuckGo">
                 </form>
                 <div class="buttons">
-                    <button class="search-button" onclick="searchGoogle()">
-                        <img src="images/google-small.webp" alt="Google Logo" class="btn-logo">
+                    <button class="search-button" data-engine="google" type="button">
+                        <img src="images/google-small.webp" alt="" class="btn-logo">
                         Google
                     </button>
-                    <button class="search-button" onclick="searchYoutube()">
-                        <img src="images/youtube.webp" alt="Youtube Logo" class="btn-logo">
+                    <button class="search-button" data-engine="youtube" type="button">
+                        <img src="images/youtube.webp" alt="" class="btn-logo">
                         Youtube
                     </button>
-                    <button class="search-button" onclick="searchYandex()">
-                        <img src="images/yandex.webp" alt="Yandex Logo" class="btn-logo">
+                    <button class="search-button" data-engine="yandex" type="button">
+                        <img src="images/yandex.webp" alt="" class="btn-logo">
                         Yandex
                     </button>
-                    <button class="search-button" onclick="searchYamaps()">
-                        <img src="images/yamaps.webp" alt="Yandex Maps Logo" class="btn-logo">
+                    <button class="search-button" data-engine="yamaps" type="button">
+                        <img src="images/yamaps.webp" alt="" class="btn-logo">
                         Yandex Maps
                     </button>
                 </div>
             </div>
+
+            <!-- IP виджет -->
             <div class="user-widget">
                 <div class="user-widget-content">
                     <div class="buttons">
-                        Мой IP адрес:
-                        <button class="search-button" onclick="fetchIP2()">Чек</button>
+                        <span>Мой IP адрес:</span>
+                        <button class="search-button" id="fetchIPBtn" type="button">Чек</button>
                     </div>
                     <b id="myIP"></b>
                 </div>
             </div>
         </div>
 
-        <!-- Lower Row -->
+        <!-- Нижний ряд: Погода+Todo | Основная сетка | Лента -->
         <div class="lower-row">
+            <!-- Левая колонка -->
             <div class="left-column">
+                <!-- Погода -->
                 <div class="weather-widget">
-                    <!-- Верхняя строка с городом и кнопками -->
                     <div class="weather-top-bar">
                         <div id="weatherLocation" class="weather-location"></div>
                         <div class="weather-header">
-                            <button id="setLocationBtn" class="icon-btn" title="Выбрать город">📍</button>
-                            <button id="fetchWeatherBtn" class="icon-btn" title="Обновить">🔄</button>
+                            <button id="setLocationBtn" class="icon-btn" title="Выбрать город" type="button">📍</button>
+                            <button id="fetchWeatherBtn" class="icon-btn" title="Обновить" type="button">🔄</button>
                         </div>
                     </div>
-                    
                     <div id="weatherContent" class="weather-content">
                         <div class="weather-loading">Загрузка...</div>
                     </div>
                 </div>
 
+                <!-- Todo -->
                 <div class="todo-list">
-                    <input type="text" id="todoInput" placeholder="Новая заметка">
+                    <textarea 
+                        id="todoInput" 
+                        placeholder="Новая заметка"
+                        maxlength="200"
+                        rows="1"
+                        aria-label="Новая задача"
+                    ></textarea>
                     <ul id="todoList"></ul>
                 </div>
             </div>
 
+            <!-- Основной контейнер с карточками -->
             <div class="main-container">
-
-                <!-- ── outer секция ── -->
+                <!-- Outer секция -->
                 <div class="net-section outer">
                     <div class="net-section-header">🌐 Занозонька</div>
                     <div class="cards-grid">
-                        <div class='card'>
-                            <a href='https://google.ru'> <img src='images/google.webp'></a>
-                            Гугл
-                        </div>
-                        <div class='card'>
-                            <a href='http://rutracker.org'> <img src='images/rto.webp'></a>
-                            РТО
-                        </div>
-                        <div class='card'>
-                            <a href='http://flibusta.is'> <img src='images/flibusta.webp'></a>
-                            Флибуста
-                        </div>
-                        <div class='card'>
-                            <a href='http://libgen.li/'> <img src='images/libgen.webp'></a>
-                            Ген-либ-рус
-                        </div>
-                        <div class='card'>
-                            <a href='https://flibs.cloud'> <img src='images/flibs.webp'></a>
-                            Флибс
-                        </div>
-                        <div class='card'>
-                            <a href='https://coursera.org'> <img src='images/coursera.webp'></a>
-                            Курсера
-                        </div>
-                        <div class='card'>
-                            <a href='https://youtube.com/'> <img src='images/youtube.webp'></a>
-                            Youtube
-                        </div>
-                        <div class='card'>
-                            <a href='https://ru.wikipedia.org/wiki/%D0%97%D0%B0%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%B0%D1%8F_%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0'> <img src='images/wiki.webp'></a>
-                            Википедия
-                        </div>
-                        <div class='card'>
-                            <a href='https://www.google.com/maps/'> <img src='images/gmaps.webp'></a>
-                            Гугл карты
-                        </div>
-                        <div class='card'>
-                            <a href='https://www.openstreetmap.org/'> <img src='images/osm.webp'></a>
-                            ОSM
-                        </div>
-                        <div class='card'>
-                            <a href='https://github.com/'> <img src='images/github.webp'></a>
-                            Гитхаб
-                        </div>
-                        <div class='card'>
-                            <a href='https://scira.ai'> <img src='images/scira.webp'></a>
-                            Scira
-                        </div>
-                        <div class='card'>
-                            <a href='https://chat.deepseek.com/'> <img src='images/deepseek.webp'></a>
-                            DeepSeek
-                        </div>
-                        <div class='card'>
-                            <a href='https://web.telegram.org/a/'> <img src='images/telegram.webp'></a>
-                            Telegram
-                        </div>
+                        <div class="card"><a href="https://google.ru"><img src="images/google.webp" alt="Google" loading="lazy"></a>Гугл</div>
+                        <div class="card"><a href="http://rutracker.org"><img src="images/rto.webp" alt="RuTracker" loading="lazy"></a>РТО</div>
+                        <div class="card"><a href="http://flibusta.is"><img src="images/flibusta.webp" alt="Flibusta" loading="lazy"></a>Флибуста</div>
+                        <div class="card"><a href="http://libgen.li/"><img src="images/libgen.webp" alt="Library Genesis" loading="lazy"></a>Ген-либ-рус</div>
+                        <div class="card"><a href="https://flibs.cloud"><img src="images/flibs.webp" alt="Flibs" loading="lazy"></a>Флибс</div>
+                        <div class="card"><a href="https://coursera.org"><img src="images/coursera.webp" alt="Coursera" loading="lazy"></a>Курсера</div>
+                        <div class="card"><a href="https://youtube.com/"><img src="images/youtube.webp" alt="YouTube" loading="lazy"></a>Youtube</div>
+                        <div class="card"><a href="https://ru.wikipedia.org/wiki/Заглавная_страница"><img src="images/wiki.webp" alt="Wikipedia" loading="lazy"></a>Википедия</div>
+                        <div class="card"><a href="https://www.google.com/maps/"><img src="images/gmaps.webp" alt="Google Maps" loading="lazy"></a>Гугл карты</div>
+                        <div class="card"><a href="https://www.openstreetmap.org/"><img src="images/osm.webp" alt="OpenStreetMap" loading="lazy"></a>OSM</div>
+                        <div class="card"><a href="https://github.com/"><img src="images/github.webp" alt="GitHub" loading="lazy"></a>Гитхаб</div>
+                        <div class="card"><a href="https://scira.ai"><img src="images/scira.webp" alt="Scira" loading="lazy"></a>Scira</div>
+                        <div class="card"><a href="https://chat.deepseek.com/"><img src="images/deepseek.webp" alt="DeepSeek" loading="lazy"></a>DeepSeek</div>
+                        <div class="card"><a href="https://web.telegram.org/a/"><img src="images/telegram.webp" alt="Telegram" loading="lazy"></a>Telegram</div>
                     </div>
                 </div>
 
-                <!-- ── CHBRNT секция ── -->
+                <!-- Local секция -->
                 <div class="net-section local">
                     <div class="net-section-header">🇷🇺 Святая русь</div>
                     <div class="cards-grid">
-                        <div class='card'>
-                            <a href='https://yandex.com'> <img src='images/yandex.webp'></a>
-                            Яндекс
-                        </div>
-                        <div class='card'>
-                            <a href='https://mail.yandex.ru'> <img src='images/yamail.webp'></a>
-                            Яндекспочта
-                        </div>
-                        <div class='card'>
-                            <a href='https://disk.yandex.ru'> <img src='images/yadisk.webp'></a>
-                            Яндексдиск
-                        </div>
-                        <div class='card'>
-                            <a href='https://e.mail.ru/inbox'> <img src='images/mailru.webp'></a>
-                            Мейл ру
-                        </div>
-                        <div class='card'>
-                            <a href='https://io.udsu.ru/uio/portal_iias.present'> <img src='images/udsu.webp'></a>
-                            Удгу
-                        </div>
-                        <div class='card'>
-                            <a href='https://habr.com/ru/feed/'> <img src='images/habr.webp'></a>
-                            Хабр
-                        </div>
-                        <div class='card'>
-                            <a href='https://distedu.ru/'> <img src='images/udsudist.webp'></a>
-                            Дистедью
-                        </div>
-                        <div class='card'>
-                            <a href='https://journal.tinkoff.ru/'> <img src='images/t-j.webp'></a>
-                            Т-ж
-                        </div>
-                        <div class='card'>
-                            <a href='https://yandex.ru/pogoda/'> <img src='images/yaweather.webp'></a>
-                            Я погода
-                        </div>
-                        <div class='card'>
-                            <a href='https://yandex.ru/maps/44/izhevsk/?ll=53.211463%2C56.851082&z=13/'> <img src='images/yamaps.webp'></a>
-                            Я карты
-                        </div>
+                        <div class="card"><a href="https://yandex.com"><img src="images/yandex.webp" alt="Yandex" loading="lazy"></a>Яндекс</div>
+                        <div class="card"><a href="https://mail.yandex.ru"><img src="images/yamail.webp" alt="Yandex Mail" loading="lazy"></a>Яндекспочта</div>
+                        <div class="card"><a href="https://disk.yandex.ru"><img src="images/yadisk.webp" alt="Yandex Disk" loading="lazy"></a>Яндексдиск</div>
+                        <div class="card"><a href="https://e.mail.ru/inbox"><img src="images/mailru.webp" alt="Mail.ru" loading="lazy"></a>Мейл ру</div>
+                        <div class="card"><a href="https://io.udsu.ru/uio/portal_iias.present"><img src="images/udsu.webp" alt="UdSU" loading="lazy"></a>Удгу</div>
+                        <div class="card"><a href="https://habr.com/ru/feed/"><img src="images/habr.webp" alt="Habr" loading="lazy"></a>Хабр</div>
+                        <div class="card"><a href="https://distedu.ru/"><img src="images/udsudist.webp" alt="Distedu" loading="lazy"></a>Дистедью</div>
+                        <div class="card"><a href="https://journal.tinkoff.ru/"><img src="images/t-j.webp" alt="T-Journal" loading="lazy"></a>Т-ж</div>
+                        <div class="card"><a href="https://yandex.ru/pogoda/"><img src="images/yaweather.webp" alt="Yandex Weather" loading="lazy"></a>Я погода</div>
+                        <div class="card"><a href="https://yandex.ru/maps/44/izhevsk/"><img src="images/yamaps.webp" alt="Yandex Maps" loading="lazy"></a>Я карты</div>
                     </div>
                 </div>
+            </div>
 
-            </div><!-- /main-container -->
-
+            <!-- Правая лента -->
             <div class="icon-placeholder">
-
-                <!-- ── outer лента ── -->
                 <div class="ribbon-net-label outer-label">🌐 outer</div>
-                <div class='ribbon outer'>
-                    <div class='ribbon-block'>
-                        <div class='ribbon-card'>
-                            <a href='https://mail.google.com/mail/u/0/?tab=wm&ogbl#inbox'> <img src='images/ribbon/gmail.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://drive.google.com/drive/'> <img src='images/ribbon/gdrive.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://colab.research.google.com/'> <img src='images/ribbon/colab.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://code.earthengine.google.com/'> <img src='images/ribbon/ee.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://developers.google.com/earth-engine/getstarted'> <img style='filter: saturate(7);' src='images/ribbon/ee.webp'></a>
-                        </div>
+                <div class="ribbon outer">
+                    <div class="ribbon-block">
+                        <div class="ribbon-card"><a href="https://mail.google.com/mail/u/0/"><img src="images/ribbon/gmail.webp" alt="Gmail" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://drive.google.com/drive/"><img src="images/ribbon/gdrive.webp" alt="Google Drive" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://colab.research.google.com/"><img src="images/ribbon/colab.webp" alt="Google Colab" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://code.earthengine.google.com/"><img src="images/ribbon/ee.webp" alt="Earth Engine" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://developers.google.com/earth-engine/"><img src="images/ribbon/ee.webp" alt="EE Docs" style="filter: saturate(7)" loading="lazy"></a></div>
                     </div>
-                    <div class='ribbon-block'>
-                        <div class='ribbon-card'>
-                            <a href='https://translate.google.com'> <img src='images/ribbon/gtrans.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://www.deepl.com/translator'> <img src='images/ribbon/deepl.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://context.reverso.net/translation/english-russian/'> <img src='images/ribbon/reverso.webp'></a>
-                        </div>
+                    <div class="ribbon-block">
+                        <div class="ribbon-card"><a href="https://translate.google.com"><img src="images/ribbon/gtrans.webp" alt="Google Translate" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://www.deepl.com/translator"><img src="images/ribbon/deepl.webp" alt="DeepL" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://context.reverso.net/translation/english-russian/"><img src="images/ribbon/reverso.webp" alt="Reverso" loading="lazy"></a></div>
                     </div>
                 </div>
 
-                <!-- ── CHBRNT лента ── -->
                 <div class="ribbon-net-label local-label">🇷🇺 CHBRNT</div>
-                <div class='ribbon local'>
-                    <div class='ribbon-block'>
-                        <div class='ribbon-card'>
-                            <a href='https://yandex.ru/images/'> <img src='images/ribbon/yaimgs.svg'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://www.kinopoisk.ru/'> <img src='images/ribbon/kp.svg'></a>
-                        </div>
+                <div class="ribbon local">
+                    <div class="ribbon-block">
+                        <div class="ribbon-card"><a href="https://yandex.ru/images/"><img src="images/ribbon/yaimgs.svg" alt="Yandex Images" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://www.kinopoisk.ru/"><img src="images/ribbon/kp.svg" alt="Kinopoisk" loading="lazy"></a></div>
                     </div>
-                    <div class='ribbon-block'>
-                        <div class='ribbon-card'>
-                            <a href='https://translate.yandex.com/'> <img src='images/ribbon/yatrans.webp'></a>
-                        </div>
-                        <div class='ribbon-card'>
-                            <a href='https://www.multitran.com/'> <img src='images/ribbon/multitran.webp'></a>
-                        </div>
+                    <div class="ribbon-block">
+                        <div class="ribbon-card"><a href="https://translate.yandex.com/"><img src="images/ribbon/yatrans.webp" alt="Yandex Translate" loading="lazy"></a></div>
+                        <div class="ribbon-card"><a href="https://www.multitran.com/"><img src="images/ribbon/multitran.webp" alt="Multitran" loading="lazy"></a></div>
                     </div>
-                </div>
-
-            </div><!-- /icon-placeholder -->
-        </div><!-- /lower-row -->
-    </div><!-- /container -->
-
-    <style>
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 20px;
-    background-color: #1e1e1e;
-    color: #ffffff;
-}
-
-.container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.upper-row, .lower-row {
-    display: grid;
-    grid-template-columns: 1fr 3fr 1fr;
-    gap: 5px;
-}
-
-.lower-row {
-    grid-template-columns: 1.3fr 6fr 1fr !important;
-}
-
-.left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.input-section, .todo-list {
-    padding: 20px;
-    background-color: #2a2a2a;
-    border-radius: 8px;
-}
-
-.user-widget {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-.clocks {
-    text-align: center;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-#clock-main {
-    display: inline;
-    font-size: xx-large;
-}
-
-#clock-seconds {
-    display: inline;
-}
-
-h2 {
-    margin-bottom: 10px;
-}
-
-.input-section input {
-    display: block;
-    margin: 10px 0;
-    padding: 10px;
-    width: 100%;
-    border: 1px solid #5f5f63;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
-    background-color: #38383d;
-    color: #dededf;
-    background-image: url(images/duck-small.webp);
-    background-position: 5px 5px;
-    background-repeat: no-repeat;
-    padding: 12px 20px 12px 50px;
-    height: 40px;
-}
-
-.buttons {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-}
-
-.search-button {
-    display: flex;
-    align-items: center;
-    background-color: #444;
-    color: #ffffff;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.search-button:hover {
-    background-color: #505050;
-}
-
-.btn-logo {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
-}
-
-/* ── Главная сетка: колонка из двух секций ── */
-.main-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
-}
-
-/* ── Сетка карточек внутри секции ── */
-.cards-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: flex-start;
-    row-gap: 20px;
-}
-
-/* ── Общий контейнер секции (outer / CHBRNT) ── */
-.net-section {
-    border-radius: 8px;
-    padding: 12px 16px 30px;
-    position: relative;
-}
-
-.net-section.outer {
-    border: 1px solid rgba(77, 148, 255, 0.40);
-    background-color: rgba(77, 148, 255, 0.05);
-}
-
-.net-section.local {
-    border: 1px solid rgba(220, 70, 70, 0.40);
-    background-color: rgba(220, 70, 70, 0.05);
-}
-
-/* ── Заголовок секции ── */
-.net-section-header {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-}
-
-.outer  .net-section-header { color: #7ab0ff; }
-.local .net-section-header { color: #ff7a7a; }
-
-/* ── Карточка ── */
-.card {
-    border-radius: 4px;
-    width: 90px;
-    height: 90px;
-    margin: 5px;
-    text-align: center;
-}
-
-img {
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 10px;
-    filter: brightness(80%);
-}
-
-/* ── Todo ── */
-#todoInput {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    background-color: #444444;
-    color: #ffffff;
-}
-
-.todo-list ul {
-    list-style-type: none;
-}
-
-/* ── Боковая лента ── */
-.icon-placeholder {
-    text-align: center;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-/* Метка над лентой */
-.ribbon-net-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.8px;
-    text-transform: uppercase;
-    margin: 10px 0 4px;
-    opacity: 0.75;
-}
-
-.ribbon-net-label:first-child { margin-top: 0; }
-
-.outer-label   { color: #7ab0ff; }
-.local-label { color: #ff7a7a; }
-
-.ribbon {
-    display: inline-block;
-    width: 100%;
-}
-
-/* Цвет рамки ribbon-block в зависимости от родителя */
-.ribbon.outer  .ribbon-block { border-color: rgba(77, 148, 255, 0.45); }
-.ribbon.local .ribbon-block { border-color: rgba(220, 70, 70, 0.45); }
-
-.ribbon-block {
-    border-style: dashed;
-    border-width: 1px;
-    border-color: #94949e; /* перекрывается выше */
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
-    width: 100%;
-    margin: 6px 0;
-    border-radius: 10px;
-    padding: 8px;
-}
-
-.ribbon-card {
-    width: 40px;
-}
-
-/* ── Todo list items ── */
-#todoList {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    margin: 5px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #1e1e1e;
-    border-radius: 5px;
-}
-
-li button {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    color: #ffffff;
-    cursor: pointer;
-    background-color: #f44336;
-}
-
-li button:hover {
-    background-color: #c62828;
-}
-
-a:focus img {
-    border: 5px solid #cca300;
-}
-
-
-/* ── Weather Widget ── */
-.weather-widget {
-    padding: 20px;
-    background-color: #2a2a2a;
-    border-radius: 8px;
-    position: relative;
-    min-height: 160px;
-    display: flex;
-    flex-direction: column;
-    margin-top: 12px;
-}
-
-/* Контейнер для верхней строки с городом и кнопками */
-.weather-top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    min-height: 32px;
-}
-
-/* Город - простой белый текст */
-.weather-location {
-    font-weight: bold;
-    color: #ffffff;
-    font-size: 0.95em;
-    max-width: calc(100% - 100px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Кнопки */
-.weather-header {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-.icon-btn {
-    padding: 6px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 50%;
-    background-color: #444444;
-    color: #ffffff;
-    cursor: pointer;
-    font-size: 1.1em;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-btn:hover {
-    background-color: #555555;
-    transform: scale(1.05);
-}
-
-.icon-btn:active {
-    transform: scale(0.95);
-}
-
-.weather-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.weather-loading, .weather-error {
-    text-align: center;
-    padding: 20px;
-    color: #888888;
-}
-
-.weather-error {
-    color: #f44336;
-}
-
-/* Основной блок с погодой */
-.weather-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-    margin: 5px 0;
-}
-
-.weather-main {
-    flex: 1;
-}
-
-/* Температура */
-.weather-temp {
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #4caf50;
-    line-height: 1;
-    margin: 0 0 5px 0;
-    letter-spacing: -1px;
-}
-
-/* Описание погоды */
-.weather-desc {
-    font-size: 0.95em;
-    margin: 5px 0;
-    color: #e0e0e0;
-    text-transform: capitalize;
-}
-
-/* Детали (ветер, влажность и т.д.) */
-.weather-details {
-    margin-top: 8px;
-    font-size: 0.8em;
-    color: #aaaaaa;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.weather-detail-item {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 3px 8px;
-    border-radius: 20px;
-}
-
-.weather-detail-item span:first-child {
-    font-size: 0.9em;
-}
-
-/* Иконка погоды */
-.weather-icon {
-    font-size: 2.5em;
-    min-width: 55px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 50px;
-    padding: 8px;
-    animation: weatherPulse 2s ease-in-out infinite;
-    align-self: center;
-}
-
-@keyframes weatherPulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-/* Время обновления */
-.weather-update-time {
-    font-size: 0.7em;
-    color: #616161;
-    margin-top: 12px;
-    text-align: right;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 8px;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-    .weather-temp {
-        font-size: 2em;
-    }
-    
-    .weather-icon {
-        font-size: 2em;
-        min-width: 45px;
-        padding: 6px;
-    }
-    
-    .weather-details {
-        gap: 5px;
-    }
-    
-    .weather-detail-item {
-        font-size: 0.75em;
-    }
-    
-    .weather-location {
-        font-size: 0.85em;
-        max-width: calc(100% - 80px);
-    }
-}
-    </style>
-
-<script>
-const UPDATE_INTERVAL = 1000 * 15;
-const TIMEZONE_OFFSET = 4; // UTC+4
-
-window.onload = function() {
-    updateTime();
-    setInterval(updateTime, UPDATE_INTERVAL);
-}
-
-const WEEKDAYS = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-const formatterDate = new Intl.DateTimeFormat("ru", { day: 'numeric', month: 'long' });
-const formatterWeekday = new Intl.DateTimeFormat("ru", { weekday: 'long' });
-
-function updateTime() {
-    const now = new Date();
-    
-    const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const localTime = new Date(utcTime + (TIMEZONE_OFFSET * 3600000));
-    
-    document.getElementById('clock-date').innerHTML = formatterDate.format(localTime);
-    document.getElementById('clock-weekday').innerHTML = formatterWeekday.format(localTime);
-    
-    let hours = localTime.getHours();
-    let minutes = localTime.getMinutes();
-    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-    
-    document.getElementById('clock-main').innerHTML = timeStr;
-}
-
-function searchOnline(baseSearchUrl) {
-    const searchInput = document.getElementById('searchInput').value;
-    const encodedSearchInput = encodeURIComponent(searchInput);
-    window.location.href = `${baseSearchUrl}${encodedSearchInput}`;
-}
-
-function searchGoogle()  { searchOnline('https://www.google.com/search?q='); }
-function searchYoutube() { searchOnline('https://www.youtube.com/results?search_query='); }
-function searchYandex()  { searchOnline('https://ya.ru/search/?text='); }
-function searchYamaps()  { searchOnline('https://yandex.ru/maps/44/izhevsk/search/'); }
-
-function loadTodos() {
-    const todos = JSON.parse(localStorage.getItem('todos')) || [];
-    const todoList = document.getElementById('todoList');
-    todoList.innerHTML = '';
-    todos.forEach((todo, index) => {
-        const li = document.createElement('li');
-        li.textContent = todo;
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'X';
-        removeButton.onclick = () => removeTodo(index);
-        li.appendChild(removeButton);
-        todoList.appendChild(li);
-    });
-}
-
-function addTodo() {
-    const todoInput = document.getElementById('todoInput');
-    const todoText = todoInput.value.trim();
-    if (todoText === '') return;
-    const todos = JSON.parse(localStorage.getItem('todos')) || [];
-    todos.push(todoText);
-    localStorage.setItem('todos', JSON.stringify(todos));
-    todoInput.value = '';
-    loadTodos();
-}
-
-function removeTodo(index) {
-    const todos = JSON.parse(localStorage.getItem('todos')) || [];
-    todos.splice(index, 1);
-    localStorage.setItem('todos', JSON.stringify(todos));
-    loadTodos();
-}
-
-function fetchIP2() {
-    fetch('https://ipapi.co/json/')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('ipapi.co вернул ошибку');
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById('myIP').textContent = 
-                `${data.ip} (${data.country_name}: ${data.city} | ${data.org})`;
-        })
-        .catch(error => {
-            console.error('ipapi.co error:', error);
-            fetch('https://ipinfo.io/json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('ipinfo.io вернул ошибку');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const countryName = getCountryName(data.country);
-                    const city = data.city || 'Неизвестный город';
-                    const org = data.org || 'Неизвестный провайдер';
-                    
-                    document.getElementById('myIP').textContent = 
-                        `${data.ip} (${countryName}: ${city} | ${org})`;
-                })
-                .catch(fallbackError => {
-                    console.error('ipinfo.io error:', fallbackError);
-                    document.getElementById('myIP').textContent = 
-                        'Не удалось определить IP. Проверьте подключение.';
-                });
-        });
-}
-
-function getCountryName(countryCode) {
-    const countries = {
-        'RU': 'Россия',
-        'US': 'США',
-        'GB': 'Великобритания',
-        'DE': 'Германия',
-        'FR': 'Франция',
-        'IT': 'Италия',
-        'ES': 'Испания',
-        'CN': 'Китай',
-        'JP': 'Япония',
-        'KR': 'Южная Корея',
-        'NL': 'Нидерланды'
-    };
-    
-    return countries[countryCode] || countryCode;
-}
-
-document.getElementById('todoInput').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') { addTodo(); }
-});
-window.addEventListener('load', loadTodos);
-
-
-// ── Погода ──
-class WeatherWidget {
-    constructor() {
-        this.currentLocation = null;
-        this.currentWeather = null;
-        this.lastUpdate = null;
-        this.cacheKey = 'weather_data';
-        this.init();
-    }
-
-    async init() {
-        this.loadLocationFromStorage();
-        this.loadWeatherFromCache(); // Загружаем кэшированную погоду сразу
-        
-        if (!this.currentLocation) {
-            this.showLocationPrompt();
-        } else if (!this.currentWeather) {
-            // Если нет кэша, но есть город - показываем запрос на обновление
-            this.showNoDataMessage();
-        } else {
-            this.displayWeather(); // Показываем кэшированные данные
-        }
-        
-        // Навешиваем обработчики
-        document.getElementById('setLocationBtn').addEventListener('click', () => this.showLocationPrompt());
-        document.getElementById('fetchWeatherBtn').addEventListener('click', () => this.fetchWeather());
-    }
-
-    loadLocationFromStorage() {
-        const saved = localStorage.getItem('weather_location');
-        if (saved) {
-            this.currentLocation = saved;
-        }
-    }
-
-    saveLocationToStorage() {
-        if (this.currentLocation) {
-            localStorage.setItem('weather_location', this.currentLocation);
-        }
-    }
-
-    loadWeatherFromCache() {
-        const cached = localStorage.getItem(this.cacheKey);
-        if (cached) {
-            try {
-                const data = JSON.parse(cached);
-                // Проверяем, что кэш не слишком старый (не старше 24 часов)
-                const cacheAge = Date.now() - data.timestamp;
-                const maxAge = 24 * 60 * 60 * 1000; // 24 часа
-                
-                if (cacheAge < maxAge && data.location === this.currentLocation) {
-                    this.currentWeather = data.weather;
-                    this.lastUpdate = new Date(data.timestamp);
-                    console.log('Загружено из кэша:', this.currentWeather);
-                } else {
-                    console.log('Кэш устарел или город изменился');
-                    localStorage.removeItem(this.cacheKey);
-                }
-            } catch (e) {
-                console.error('Ошибка чтения кэша:', e);
-            }
-        }
-    }
-
-    saveWeatherToCache() {
-        if (this.currentWeather && this.currentLocation) {
-            const cacheData = {
-                timestamp: Date.now(),
-                location: this.currentLocation,
-                weather: this.currentWeather
-            };
-            localStorage.setItem(this.cacheKey, JSON.stringify(cacheData));
-            console.log('Погода сохранена в кэш');
-        }
-    }
-
-    showNoDataMessage() {
-        const contentDiv = document.getElementById('weatherContent');
-        const locationDiv = document.getElementById('weatherLocation');
-        locationDiv.textContent = this.currentLocation;
-        
-        contentDiv.innerHTML = `
-            <div class="weather-info">
-                <div class="weather-main">
-                    <div class="weather-temp">--°C</div>
-                    <div class="weather-desc">Нажмите 🔄 для обновления</div>
-                </div>
-                <div class="weather-icon">
-                    🌡️
                 </div>
             </div>
-        `;
-    }
+        </div>
+    </div>
 
-    showLocationPrompt() {
-        const newLocation = prompt('Введите название города (например: Moscow, Samara, Saint Petersburg):', this.currentLocation || '');
-        if (newLocation && newLocation.trim()) {
-            this.currentLocation = newLocation.trim();
-            this.saveLocationToStorage();
-            this.fetchWeather(); // При смене города сразу загружаем новую погоду
-        }
-    }
-
-    async fetchWeather() {
-        if (!this.currentLocation) {
-            this.showLocationPrompt();
-            return;
-        }
-
-        const contentDiv = document.getElementById('weatherContent');
-        contentDiv.innerHTML = '<div class="weather-loading">🌤️ Загрузка погоды...</div>';
-
-        // Пробуем несколько API
-        const weatherData = await this.tryMultipleApis();
-        
-        if (weatherData) {
-            this.currentWeather = weatherData;
-            this.lastUpdate = new Date();
-            this.saveWeatherToCache(); // Сохраняем в кэш
-            this.displayWeather();
-        } else {
-            contentDiv.innerHTML = '<div class="weather-error">❌ Не удалось получить погоду. Проверьте название города или попробуйте позже.</div>';
-        }
-    }
-
-    async tryMultipleApis() {
-        // Список API для проб
-        const apis = [
-            {
-                name: 'wttr.in',
-                url: `https://wttr.in/${encodeURIComponent(this.currentLocation)}?format=%t+%C+%w&lang=ru`,
-                parse: (text) => {
-                    // Формат: "+12°C Partly cloudy 15 km/h"
-                    const match = text.match(/([+-]?\d+°C)\s+(.+?)(?:\s+(\d+\s*km\/h))?$/);
-                    if (match) {
-                        return {
-                            temp: match[1],
-                            description: match[2].trim(),
-                            wind: match[3] || null,
-                            feelsLike: null,
-                            humidity: null,
-                            location: this.currentLocation,
-                            source: 'wttr.in'
-                        };
-                    }
-                    return null;
-                }
-            },
-            {
-                name: 'open-meteo (геокодинг)', 
-                url: async () => {
-                    // Сначала получаем координаты города через geocoding-api
-                    const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(this.currentLocation)}&count=1&language=ru&format=json`);
-                    const geoData = await geoResponse.json();
-                    if (geoData.results && geoData.results[0]) {
-                        const { latitude, longitude, name, country } = geoData.results[0];
-                        return {
-                            url: `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto`,
-                            location: `${name}, ${country}`
-                        };
-                    }
-                    return null;
-                },
-                parse: (data, locationName) => {
-                    if (data.current_weather) {
-                        const temp = data.current_weather.temperature;
-                        const wind = data.current_weather.windspeed;
-                        const weatherCode = data.current_weather.weathercode;
-                        
-                        // Конвертируем код погоды в описание
-                        const weatherDesc = this.getWeatherDescription(weatherCode);
-                        
-                        return {
-                            temp: `${Math.round(temp)}°C`,
-                            description: weatherDesc,
-                            feelsLike: null,
-                            humidity: null,
-                            wind: `${wind} м/с`,
-                            location: locationName || this.currentLocation
-                        };
-                    }
-                    return null;
-                }
-            }
-        ];
-
-        // Пробуем wttr.in
-        try {
-            const response = await fetch(apis[0].url);
-            if (response.ok) {
-                const text = await response.text();
-                const data = apis[0].parse(text);
-                if (data) {
-                    data.source = 'wttr.in';
-                    return data;
-                }
-            }
-        } catch (error) {
-            console.error('wttr.in error:', error);
-        }
-
-        // Пробуем Open-Meteo (более надёжный)
-        try {
-            const api = apis[1];
-            const apiUrlData = await api.url();
-            if (apiUrlData) {
-                const response = await fetch(apiUrlData.url);
-                if (response.ok) {
-                    const json = await response.json();
-                    const data = api.parse(json, apiUrlData.location);
-                    if (data) {
-                        data.source = 'Open-Meteo';
-                        return data;
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Open-Meteo error:', error);
-        }
-
-        return null;
-    }
-
-    getWeatherDescription(code) {
-        // Коды погоды Open-Meteo
-        const weatherCodes = {
-            0: 'Ясно',
-            1: 'Преимущественно ясно',
-            2: 'Переменная облачность',
-            3: 'Пасмурно',
-            45: 'Туман',
-            48: 'Иней',
-            51: 'Легкая морось',
-            53: 'Морось',
-            55: 'Сильная морось',
-            56: 'Ледяная морось',
-            57: 'Сильная ледяная морось',
-            61: 'Небольшой дождь',
-            63: 'Дождь',
-            65: 'Сильный дождь',
-            66: 'Ледяной дождь',
-            67: 'Сильный ледяной дождь',
-            71: 'Небольшой снег',
-            73: 'Снег',
-            75: 'Сильный снег',
-            77: 'Снежная крупа',
-            80: 'Небольшой ливень',
-            81: 'Ливень',
-            82: 'Сильный ливень',
-            85: 'Небольшой снегопад',
-            86: 'Сильный снегопад',
-            95: 'Гроза',
-            96: 'Гроза с градом',
-            99: 'Сильная гроза с градом'
-        };
-        return weatherCodes[code] || 'Неизвестно';
-    }
-
-    displayWeather() {
-        const contentDiv = document.getElementById('weatherContent');
-        const locationDiv = document.getElementById('weatherLocation');
-        const weather = this.currentWeather;
-        
-        // Обновляем город в верхней строке (без эмодзи)
-        locationDiv.textContent = weather.location || this.currentLocation;
-        
-        // Форматируем время последнего обновления
-        const updateTimeStr = this.lastUpdate 
-            ? this.lastUpdate.toLocaleString('ru-RU', {
-                hour: '2-digit',
-                minute: '2-digit',
-                day: '2-digit',
-                month: '2-digit'
-            })
-            : 'Кэшированные данные';
-        
-        // Формируем детали погоды
-        let detailsHtml = '';
-        if (weather.wind) {
-            detailsHtml += `
-                <div class="weather-detail-item">
-                    <span>💨</span>
-                    <span>${weather.wind}</span>
-                </div>
-            `;
-        }
-        if (weather.humidity) {
-            detailsHtml += `
-                <div class="weather-detail-item">
-                    <span>💧</span>
-                    <span>${weather.humidity}%</span>
-                </div>
-            `;
-        }
-        if (weather.feelsLike) {
-            detailsHtml += `
-                <div class="weather-detail-item">
-                    <span>🌡️</span>
-                    <span>${weather.feelsLike}</span>
-                </div>
-            `;
-        }
-        
-        contentDiv.innerHTML = `
-            <div class="weather-info">
-                <div class="weather-main">
-                    <div class="weather-temp">
-                        ${weather.temp}
-                    </div>
-                    <div class="weather-desc">
-                        ${weather.description}
-                    </div>
-                    ${detailsHtml ? `<div class="weather-details">${detailsHtml}</div>` : ''}
-                </div>
-                <div class="weather-icon">
-                    ${this.getWeatherIcon(weather.description)}
-                </div>
-            </div>
-            <div class="weather-update-time">
-                🕐 ${updateTimeStr} ${weather.source ? `• ${weather.source}` : ''}
-            </div>
-        `;
-    }
-
-    getWeatherIcon(description) {
-        const icons = {
-            'Ясно': '☀️',
-            'Преимущественно ясно': '🌤️',
-            'Переменная облачность': '⛅',
-            'Пасмурно': '☁️',
-            'Туман': '🌫️',
-            'Дождь': '🌧️',
-            'Небольшой дождь': '🌦️',
-            'Сильный дождь': '🌧️💧',
-            'Снег': '❄️',
-            'Небольшой снег': '🌨️',
-            'Гроза': '⛈️'
-        };
-        
-        for (const [key, icon] of Object.entries(icons)) {
-            if (description.includes(key)) {
-                return icon;
-            }
-        }
-        return '🌡️';
-    }
-}
-
-// Инициализация виджета после загрузки страницы
-document.addEventListener('DOMContentLoaded', () => {
-    new WeatherWidget();
-});
-</script>
+    <!-- Основной скрипт -->
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>

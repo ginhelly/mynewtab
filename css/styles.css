@@ -1,0 +1,981 @@
+/* ============================================
+   БАЗОВЫЕ НАСТРОЙКИ И СБРОС
+   ============================================ */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* Цвета темы */
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #2a2a2a;
+    --bg-tertiary: #38383d;
+    --bg-hover: #444444;
+    
+    /* Акцентные цвета */
+    --accent-blue: #4d94ff;
+    --accent-blue-light: #7ab0ff;
+    --accent-red: #dc4646;
+    --accent-red-light: #ff7a7a;
+    --accent-green: #4caf50;
+    --accent-yellow: #cca300;
+    
+    /* Текст */
+    --text-primary: #ffffff;
+    --text-secondary: #dededf;
+    --text-muted: #aaaaaa;
+    --text-dark: #616161;
+    
+    /* Границы */
+    --border-color: #5f5f63;
+    
+    /* Размеры */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    
+    /* Отступы */
+    --gap-sm: 5px;
+    --gap-md: 10px;
+    --gap-lg: 12px;
+    --gap-xl: 20px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: var(--gap-xl);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+/* ============================================
+   СЕТКА И КОНТЕЙНЕРЫ
+   ============================================ */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xl);
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.upper-row,
+.lower-row {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    gap: var(--gap-sm);
+}
+
+.lower-row {
+    grid-template-columns: 1.3fr 6fr 1fr !important;
+    gap: 15px !important;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ============================================
+   ЧАСЫ
+   ============================================ */
+
+.clocks {
+    text-align: center;
+    padding: var(--gap-xl);
+    border-radius: var(--radius-md);
+}
+
+#clock-main {
+    display: inline;
+    font-size: xx-large;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+#clock-date {
+    font-size: 1.1em;
+    color: var(--text-secondary);
+    margin-top: var(--gap-sm);
+}
+
+#clock-weekday {
+    font-size: 0.9em;
+    color: var(--text-muted);
+    text-transform: capitalize;
+    margin-top: 2px;
+}
+
+/* ============================================
+   ПОИСК
+   ============================================ */
+
+.input-section {
+    padding: 15px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;  /* Растягивает по высоте родителя */
+}
+
+.input-section form {
+    margin-bottom: 12px;
+}
+
+.input-section input[type="search"] {
+    display: block;
+    width: 100%;
+    padding: 12px 20px 12px 50px;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;  /* Увеличиваем закругление */
+    font-size: 16px;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    background-image: url(../images/duck-small.webp);
+    background-position: 12px center;  /* Смещаем иконку */
+    background-repeat: no-repeat;
+    background-size: 24px;
+    height: 44px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-section input[type="search"]:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 2px rgba(77, 148, 255, 0.2);
+}
+
+.buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--gap-md);
+    flex-wrap: wrap;
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border: none;
+    border-radius: 24px;  /* Скругляем кнопки */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    gap: 8px;  /* Вместо margin-right у .btn-logo */
+}
+
+.search-button:hover {
+    background-color: #505050;
+    transform: translateY(-1px);
+}
+
+.search-button:active {
+    transform: translateY(0);
+}
+
+.btn-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+/* ============================================
+   ВИДЖЕТ ПОЛЬЗОВАТЕЛЯ (IP)
+   ============================================ */
+
+.user-widget {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--gap-xl);
+    border-radius: var(--radius-md);
+}
+
+.user-widget-content {
+    text-align: center;
+}
+
+.user-widget .buttons {
+    margin-bottom: var(--gap-md);
+    justify-content: center;
+}
+
+#myIP {
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* ============================================
+   ПОГОДА
+   ============================================ */
+
+/* ============================================
+   ПОГОДА — НОВЫЙ ДИЗАЙН
+   ============================================ */
+
+.weather-widget {
+    padding: var(--gap-xl);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    position: relative;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.weather-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    min-height: 28px;
+}
+
+.weather-location {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1em;
+    max-width: calc(100% - 80px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.3px;
+}
+
+.weather-header {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.icon-btn {
+    padding: 5px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+}
+
+.icon-btn:hover {
+    opacity: 1;
+    background-color: #505050;
+    transform: scale(1.1);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+.weather-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weather-loading,
+.weather-error {
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9em;
+}
+
+.weather-loading {
+    color: var(--text-muted);
+}
+
+.weather-error {
+    color: var(--accent-red);
+    background: rgba(220, 70, 70, 0.1);
+    border-radius: var(--radius-sm);
+}
+
+/* Основной блок погоды */
+.weather-main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.weather-temp-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.weather-temp {
+    font-size: 3em;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+    letter-spacing: -2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.weather-temp .emoji {
+    font-size: 0.6em;
+    filter: grayscale(0.2);
+}
+
+.weather-feels-like {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.weather-desc {
+    font-size: 1.1em;
+    color: var(--text-secondary);
+    text-transform: lowercase;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+/* Чипы с деталями */
+.weather-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.weather-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.2s;
+}
+
+.weather-chip:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.weather-chip-icon {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+/* Время обновления */
+.weather-meta {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7em;
+    color: var(--text-dark);
+}
+
+.weather-source {
+    font-size: 0.85em;
+    opacity: 0.8;
+}
+
+/* Состояние "нет данных" */
+.weather-empty {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-muted);
+}
+
+.weather-empty-hint {
+    font-size: 0.85em;
+    margin-top: 4px;
+    opacity: 0.7;
+}
+
+/* ============================================
+   СПИСОК ЗАМЕТОК (TODO)
+   ============================================ */
+
+.todo-list {
+    padding: 12px;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+#todoInput {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--gap-md);
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: box-shadow 0.2s;
+    resize: vertical;
+    min-height: 36px;
+    font-family: inherit;
+}
+
+#todoInput:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-blue);
+}
+
+#todoList {
+    list-style-type: none;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.todo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;  /* Меняем flex-start на center */
+    padding: 8px 0;
+    margin: 0;
+    background-color: transparent;
+    border-radius: 0;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    animation: slideIn 0.2s ease;
+}
+
+.todo-item:last-child {
+    border-bottom: none;
+}
+
+.todo-text {
+    flex: 1;
+    word-break: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 20px;
+    /* Убираем лишние отступы */
+    margin: 0;
+}
+
+.todo-text::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    color: var(--accent-blue);
+    font-size: 14px;  /* Меняем с 16px на 14px */
+    font-weight: bold;
+}
+
+.todo-actions {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.btn-delete {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 8px;
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+
+.btn-delete:hover {
+    opacity: 1;
+    color: var(--accent-red);
+    transform: scale(1.05);
+}
+
+.todo-empty {
+    text-align: center;
+    color: var(--text-dark);
+    padding: 20px;
+    font-style: italic;
+}
+
+/* Убираем старые стили для кнопок, которые больше не нужны */
+.btn-toggle {
+    display: none;
+}
+
+/* Анимация */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Скроллбар для списка */
+#todoList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#todoList::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+    border-radius: 3px;
+}
+
+#todoList::-webkit-scrollbar-thumb {
+    background: var(--bg-hover);
+    border-radius: 3px;
+}
+
+/* Стили для форматирования заметок */
+.todo-text strong {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.todo-text em {
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.todo-text u {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+.todo-link {
+    color: var(--accent-blue);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent-blue);
+    transition: all 0.2s;
+}
+
+.todo-link:hover {
+    color: var(--accent-blue-light);
+    border-bottom-style: solid;
+}
+
+/* Чтобы точка-буллет не мешала форматированию */
+.todo-text {
+    flex: 1;
+    word-break: break-word;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    padding-left: 20px;
+    margin: 0;
+}
+
+.todo-text::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    color: var(--accent-blue);
+    font-size: 14px;
+    font-weight: bold;
+    pointer-events: none;  /* Чтобы точка не перехватывала клики */
+}
+
+/* ============================================
+   ОСНОВНОЙ КОНТЕЙНЕР (СЕТКА КАРТОЧЕК)
+   ============================================ */
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-lg);
+    padding: var(--gap-lg);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-secondary);
+}
+
+/* Секции сеток */
+.net-section {
+    border-radius: var(--radius-md);
+    padding: var(--gap-lg) 16px 30px;
+    position: relative;
+}
+
+.net-section.outer {
+    border: 1px solid rgba(77, 148, 255, 0.40);
+    background-color: rgba(77, 148, 255, 0.05);
+}
+
+.net-section.local {
+    border: 1px solid rgba(220, 70, 70, 0.40);
+    background-color: rgba(220, 70, 70, 0.05);
+}
+
+.net-section-header {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    margin-bottom: var(--gap-lg);
+}
+
+.net-section.outer .net-section-header {
+    color: var(--accent-blue-light);
+}
+
+.net-section.local .net-section-header {
+    color: var(--accent-red-light);
+}
+
+/* Сетка карточек */
+.cards-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-md);
+    justify-content: space-around;
+    row-gap: var(--gap-xl);
+}
+
+/* Карточка */
+.card {
+    border-radius: var(--radius-sm);
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.card a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.card img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: var(--radius-lg);
+    filter: brightness(80%);
+    transition: filter 0.2s, transform 0.2s;
+}
+
+.card:hover img {
+    filter: brightness(100%);
+}
+
+.card a:focus img {
+    border: 3px solid var(--accent-yellow);
+    outline: none;
+}
+
+/* ============================================
+   БОКОВАЯ ЛЕНТА (RIBBON)
+   ============================================ */
+
+.icon-placeholder {
+    text-align: center;
+    padding: var(--gap-xl);
+    border-radius: var(--radius-md);
+    background-color: var(--bg-secondary);
+}
+
+.ribbon-net-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    margin: 10px 0 4px;
+    opacity: 0.75;
+}
+
+.ribbon-net-label:first-child {
+    margin-top: 0;
+}
+
+.outer-label {
+    color: var(--accent-blue-light);
+}
+
+.local-label {
+    color: var(--accent-red-light);
+}
+
+.ribbon {
+    display: inline-block;
+    width: 100%;
+}
+
+.ribbon-block {
+    border-style: dashed;
+    border-width: 1px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    width: 100%;
+    margin: 6px 0;
+    border-radius: var(--radius-lg);
+    padding: 8px;
+}
+
+.ribbon.outer .ribbon-block {
+    border-color: rgba(77, 148, 255, 0.45);
+}
+
+.ribbon.local .ribbon-block {
+    border-color: rgba(220, 70, 70, 0.45);
+}
+
+.ribbon-card {
+    width: 40px;
+    transition: transform 0.2s;
+}
+
+.ribbon-card:hover {
+    transform: scale(1.1);
+}
+
+.ribbon-card img {
+    max-width: 100%;
+    border-radius: 6px;
+    filter: brightness(85%);
+    transition: filter 0.2s;
+}
+
+.ribbon-card:hover img {
+    filter: brightness(100%);
+}
+
+/* ============================================
+   АДАПТИВНОСТЬ
+   ============================================ */
+
+@media (max-width: 1200px) {
+    .upper-row,
+    .lower-row {
+        grid-template-columns: 1fr 2fr 1fr;
+    }
+    
+    .lower-row {
+        grid-template-columns: 1fr 3fr 1fr !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .upper-row,
+    .lower-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .lower-row {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .left-column {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .weather-widget,
+    .todo-list {
+        flex: 1;
+        min-width: 280px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .weather-temp {
+        font-size: 2em;
+    }
+    
+    .weather-icon {
+        font-size: 2em;
+        min-width: 45px;
+        padding: 6px;
+    }
+    
+    .weather-details {
+        gap: 5px;
+    }
+    
+    .weather-detail-item {
+        font-size: 0.75em;
+    }
+    
+    .weather-location {
+        font-size: 0.85em;
+        max-width: calc(100% - 80px);
+    }
+    
+    .card {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .buttons {
+        justify-content: center;
+    }
+    
+    .search-button {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+/* ============================================
+   УТИЛИТЫ
+   ============================================ */
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Фокус-стили для доступности */
+*:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+/* Предпочтение уменьшенной анимации */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   ФОКУС ДЛЯ КЛАВИАТУРНОЙ НАВИГАЦИИ
+   ============================================ */
+
+/* Убираем стандартные outline, но только для :focus */
+*:focus {
+    outline: none;
+}
+
+/* Добавляем кастомную жёлто-оранжевую обводку только для tab-фокуса */
+*:focus-visible {
+    outline: 3px solid #ff8c00 !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+}
+
+/* Специально для карточек и ссылок, чтобы обводка не обрезалась */
+.card a:focus-visible,
+.ribbon-card a:focus-visible,
+.search-button:focus-visible,
+.icon-btn:focus-visible,
+.todo-actions button:focus-visible,
+#fetchIPBtn:focus-visible {
+    outline: 3px solid #ff8c00 !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Для input полей — тоже оранжевая, но чуть мягче */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid #ffaa33 !important;
+    outline-offset: 2px !important;
+    border-radius: 30px;
+}
+
+/* Для ссылок внутри карточек — чтобы обводка была вокруг всей карточки */
+.card:has(a:focus-visible) {
+    outline: 3px solid #ff8c00;
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+/* Альтернатива для старых браузеров (если не поддерживают :has) */
+.card a:focus-visible {
+    display: inline-block;
+    outline: 3px solid #ff8c00;
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+/* Для кнопок в ribbon, чтобы обводка была заметной */
+.ribbon-card a:focus-visible img {
+    outline: 3px solid #ff8c00;
+    outline-offset: 3px;
+    border-radius: 8px;
+}
+
+/* Для элементов todo списка */
+.todo-item:focus-visible,
+.todo-item:has(button:focus-visible) {
+    outline: 3px solid #ff8c00;
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+/* Для контейнера с часами (если он кликабельный) */
+.clocks:focus-visible {
+    outline: 3px solid #ff8c00;
+    outline-offset: 3px;
+    border-radius: 12px;
+}
+
+/* Предотвращаем конфликт с другими обводками */
+button:focus-visible,
+a:focus-visible {
+    box-shadow: none !important;
+}
+
+/* Убираем outline у элементов, которые могут его иметь по умолчанию, но не должны */
+button:focus,
+a:focus,
+input:focus {
+    outline: none;
+}
