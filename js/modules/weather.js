@@ -7,8 +7,9 @@ class WeatherWidget {
     constructor(options = {}) {
         this.options = {
             cacheKey: options.cacheKey || 'weather_data',
-            cacheMaxAge: options.cacheMaxAge || 24 * 60 * 60 * 1000, // 24 часа
+            cacheMaxAge: options.cacheMaxAge || 24 * 60 * 60 * 1000,
             defaultLocation: options.defaultLocation || null,
+            isLocalBrowser: options.isLocalBrowser || true,
             ...options
         };
 
@@ -16,7 +17,6 @@ class WeatherWidget {
         this.currentWeather = null;
         this.lastUpdate = null;
 
-        // DOM элементы
         this.elements = {
             location: document.getElementById('weatherLocation'),
             content: document.getElementById('weatherContent'),
@@ -24,14 +24,10 @@ class WeatherWidget {
             fetchWeatherBtn: document.getElementById('fetchWeatherBtn')
         };
 
-        // Привязка методов
         this.handleSetLocation = this.handleSetLocation.bind(this);
         this.handleFetchWeather = this.handleFetchWeather.bind(this);
     }
 
-    /**
-     * Инициализация виджета
-     */
     init() {
         this.loadLocationFromStorage();
         this.loadWeatherFromCache();
@@ -46,9 +42,6 @@ class WeatherWidget {
         }
     }
 
-    /**
-     * Привязка событий
-     */
     bindEvents() {
         if (this.elements.setLocationBtn) {
             this.elements.setLocationBtn.addEventListener('click', this.handleSetLocation);
@@ -58,9 +51,6 @@ class WeatherWidget {
         }
     }
 
-    /**
-     * Уничтожение виджета (очистка)
-     */
     destroy() {
         if (this.elements.setLocationBtn) {
             this.elements.setLocationBtn.removeEventListener('click', this.handleSetLocation);
@@ -94,17 +84,17 @@ class WeatherWidget {
         try {
             const data = JSON.parse(cached);
             const cacheAge = Date.now() - data.timestamp;
-            
+
             if (cacheAge < this.options.cacheMaxAge && data.location === this.currentLocation) {
                 this.currentWeather = data.weather;
                 this.lastUpdate = new Date(data.timestamp);
                 console.log('[Weather] Загружено из кэша');
             } else {
-                console.log('[Weather] Кэш устарел или город изменился');
                 localStorage.removeItem(this.options.cacheKey);
             }
         } catch (e) {
             console.error('[Weather] Ошибка чтения кэша:', e);
+            localStorage.removeItem(this.options.cacheKey);
         }
     }
 
@@ -116,12 +106,11 @@ class WeatherWidget {
             location: this.currentLocation,
             weather: this.currentWeather
         };
-        
+
         localStorage.setItem(this.options.cacheKey, JSON.stringify(cacheData));
-        console.log('[Weather] Сохранено в кэш');
     }
 
-    // ===== UI Методы =====
+    // ===== UI =====
 
     showLoading() {
         if (this.elements.content) {
@@ -139,6 +128,7 @@ class WeatherWidget {
         if (this.elements.location) {
             this.elements.location.textContent = this.currentLocation;
         }
+
         if (this.elements.content) {
             this.elements.content.innerHTML = `
                 <div class="weather-empty">
@@ -154,7 +144,7 @@ class WeatherWidget {
             'Введите название города (например: Moscow, Samara, Saint Petersburg):',
             this.currentLocation || ''
         );
-        
+
         if (newLocation && newLocation.trim()) {
             this.currentLocation = newLocation.trim();
             this.saveLocationToStorage();
@@ -173,7 +163,7 @@ class WeatherWidget {
         this.showLoading();
 
         const weatherData = await this.tryMultipleApis();
-        
+
         if (weatherData) {
             this.currentWeather = weatherData;
             this.lastUpdate = new Date();
@@ -185,193 +175,299 @@ class WeatherWidget {
     }
 
     async tryMultipleApis() {
-        // Пробуем wttr.in с полной обработкой всех ошибок
-        let wttrSuccess = false;
-        
-        try {
-            console.log('[Weather] Пробуем wttr.in...');
-            const data = await this.fetchWttrIn();
-            if (data) {
-                console.log('[Weather] wttr.in успешно');
-                return data;
-            }
-            wttrSuccess = true;
-        } catch (error) {
-            console.error('[Weather] wttr.in критическая ошибка:', error.message);
-            console.error('[Weather] Тип ошибки:', error.name);
-        }
-        
-        // Если wttr.in не вернул данные (любая причина) — пробуем Open-Meteo
-        if (!wttrSuccess) {
-            console.log('[Weather] Переключение на Open-Meteo...');
+        const isLocalBrowser = this.options.isLocalBrowser;
+
+        if (isLocalBrowser) {
             try {
                 const data = await this.fetchOpenMeteo();
-                if (data) {
-                    console.log('[Weather] Open-Meteo успешно');
-                    return data;
-                }
+                if (data) return data;
             } catch (error) {
-                console.error('[Weather] Open-Meteo ошибка:', error.message);
+                console.error('[Weather] Open-Meteo не удался:', error.message);
+            }
+
+            try {
+                const data = await this.fetchWttrIn();
+                if (data) return data;
+            } catch (error) {
+                console.error('[Weather] wttr.in не удался:', error.message);
+            }
+        } else {
+            try {
+                const data = await this.fetchWttrIn();
+                if (data) return data;
+            } catch (error) {
+                console.error('[Weather] wttr.in не удался:', error.message);
+            }
+
+            try {
+                const data = await this.fetchOpenMeteo();
+                if (data) return data;
+            } catch (error) {
+                console.error('[Weather] Open-Meteo не удался:', error.message);
             }
         }
-        
-        console.log('[Weather] Все API недоступны');
+
         return null;
     }
 
-    async fetchWttrIn() {
-        const baseUrl = `https://wttr.in/${encodeURIComponent(this.currentLocation)}?format=j1`;
+    async fetchWithTimeout(url, options = {}, timeout = 5000) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+        try {
+            const response = await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+
+            if (error.name === 'AbortError') {
+                throw new Error('Таймаут запроса');
+            }
+
+            if (error instanceof TypeError) {
+                throw new Error('CORS или сетевая ошибка');
+            }
+
+            throw error;
+        }
+    }
+
+    async fetchWttrIn() {
+        const url = `https://wttr.in/${encodeURIComponent(this.currentLocation)}?format=j1`;
         const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-        const parseWeather = (text) => {
-            if (!text || typeof text !== 'string') {
-                throw new Error('Пустой ответ');
+        const makeAttempt = async () => {
+            const response = await this.fetchWithTimeout(url, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-store',
+                redirect: 'follow'
+            }, 4500);
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
             }
 
-            if (text.length < 100) {
-                throw new Error('Ответ слишком короткий');
-            }
-
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch {
-                throw new Error('Невалидный JSON');
-            }
-
-            if (!data || typeof data !== 'object') {
-                throw new Error('Ответ не является объектом');
-            }
-
-            if (!data.current_condition || !data.current_condition[0]) {
-                throw new Error('Нет current_condition');
-            }
-
-            if (!data.nearest_area?.[0]?.areaName?.[0]?.value) {
-                throw new Error('Нет локации');
-            }
-
-            const current = data.current_condition[0];
-
-            if (current.temp_C == null || current.FeelsLikeC == null) {
-                throw new Error('Нет температуры');
-            }
-
-            return {
-                temp: `${current.temp_C}°C`,
-                feelsLike: `${current.FeelsLikeC}°C`,
-                description: current.lang_ru?.[0]?.value || current.weatherDesc?.[0]?.value || 'Неизвестно',
-                wind: `${current.windspeedKmph || 0} км/ч`,
-                humidity: `${current.humidity || 0}%`,
-                location: data.nearest_area[0].areaName[0].value,
-                source: 'wttr.in'
-            };
-        };
-
-        const makeAttempt = async (attempt) => {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-            try {
-                const response = await fetch(baseUrl, {
-                    method: 'GET',
-                    mode: 'cors',
-                    cache: 'no-store',
-                    redirect: 'follow',
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-
-                console.log(`[Weather] wttr.in попытка ${attempt}, статус:`, response.status);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const text = await response.text();
-                console.log(`[Weather] wttr.in попытка ${attempt}, байт:`, text.length);
-
-                try {
-                    return parseWeather(text);
-                } catch (parseError) {
-                    console.error(`[Weather] wttr.in попытка ${attempt}, плохой ответ:`, parseError.message);
-                    console.error('[Weather] Начало ответа:', text.slice(0, 200));
-                    console.error('[Weather] Конец ответа:', text.slice(-200));
-                    throw parseError;
-                }
-            } catch (error) {
-                clearTimeout(timeoutId);
-
-                if (error.name === 'AbortError') {
-                    throw new Error('Таймаут запроса');
-                }
-
-                if (error instanceof TypeError) {
-                    throw new Error('CORS или сетевая ошибка');
-                }
-
-                throw error;
-            }
+            const data = await response.json();
+            return this.normalizeWttrData(data);
         };
 
         try {
-            return await makeAttempt(1);
+            return await makeAttempt();
         } catch (firstError) {
-            console.warn('[Weather] Первая попытка не удалась:', firstError.message);
-
             if (firstError.message === 'CORS или сетевая ошибка') {
                 throw firstError;
             }
 
             await sleep(250);
-
-            try {
-                return await makeAttempt(2);
-            } catch (secondError) {
-                console.error('[Weather] Вторая попытка тоже не удалась:', secondError.message);
-                throw secondError;
-            }
+            return await makeAttempt();
         }
     }
 
     async fetchOpenMeteo() {
-        // Геокодинг
-        const cacheBuster = Date.now();
-        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(this.currentLocation)}&count=1&language=ru&format=json&_=${cacheBuster}`;
-        
-        const geoResponse = await fetch(geoUrl, { cache: 'no-store' });
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(this.currentLocation)}&count=1&language=ru&format=json&_=${Date.now()}`;
+
+        const geoResponse = await this.fetchWithTimeout(geoUrl, {
+            cache: 'no-store'
+        }, 5000);
+
+        if (!geoResponse.ok) {
+            throw new Error(`Ошибка геокодинга: HTTP ${geoResponse.status}`);
+        }
+
         const geoData = await geoResponse.json();
-        
         if (!geoData.results?.[0]) {
             throw new Error('Город не найден');
         }
 
-        const { latitude, longitude, name, country } = geoData.results[0];
-        
-        // Получаем погоду
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=auto&_=${Date.now()}`;
-        const weatherResponse = await fetch(weatherUrl, { cache: 'no-store' });
+        const place = geoData.results[0];
+        const { latitude, longitude, name, country, admin1 } = place;
+
+        const currentFields = [
+            'temperature_2m',
+            'relative_humidity_2m',
+            'apparent_temperature',
+            'weather_code',
+            'wind_speed_10m',
+            'wind_direction_10m',
+            'is_day'
+        ].join(',');
+
+        const weatherUrl =
+            `https://api.open-meteo.com/v1/forecast` +
+            `?latitude=${latitude}` +
+            `&longitude=${longitude}` +
+            `&current=${encodeURIComponent(currentFields)}` +
+            `&timezone=auto` +
+            `&_=${Date.now()}`;
+
+        const weatherResponse = await this.fetchWithTimeout(weatherUrl, {
+            cache: 'no-store'
+        }, 5000);
+
+        if (!weatherResponse.ok) {
+            throw new Error(`Ошибка прогноза: HTTP ${weatherResponse.status}`);
+        }
+
         const weatherData = await weatherResponse.json();
-        
-        const current = weatherData.current_weather;
-        
+        return this.normalizeOpenMeteoData(weatherData, { name, country, admin1 });
+    }
+
+    // ===== Нормализация =====
+
+    normalizeWttrData(data) {
+        const current = data?.current_condition?.[0];
+        const nearest = data?.nearest_area?.[0];
+        const today = data?.weather?.[0];
+        const currentByHour = this.findNearestWttrHourly(today?.hourly, current?.localObsDateTime);
+
+        if (!current) {
+            throw new Error('wttr.in: нет current_condition');
+        }
+
+        const locationName = nearest?.areaName?.[0]?.value || this.currentLocation;
+        const regionName = nearest?.region?.[0]?.value || '';
+        const countryName = nearest?.country?.[0]?.value || '';
+
+        const location = locationName;
+
+        const rawDescription =
+            current.weatherDesc?.[0]?.value ||
+            currentByHour?.weatherDesc?.[0]?.value ||
+            'Неизвестно';
+
+        const windText = this.formatWindKmh(current.windspeedKmph);
+        const windArrow = this.getWindArrowFromCompass(current.winddir16Point);
+
         return {
-            temp: `${Math.round(current.temperature)}°C`,
-            description: this.getWeatherDescription(current.weathercode),
-            wind: `${current.windspeed} м/с`,
-            feelsLike: null,
-            humidity: null,
-            location: `${name}, ${country}`,
-            source: 'Open-Meteo'
+            temp: this.formatTemp(current.temp_C),
+            feelsLike: this.formatTemp(current.FeelsLikeC),
+            description: this.translateWttrDescription(rawDescription),wind: windText ? `${windText}${windArrow ? ` ${windArrow}` : ''}` : null,
+            humidity: this.formatPercent(current.humidity),
+            location,
+            source: 'wttr.in',
+            raw: {
+                provider: 'wttr.in',
+                weatherCode: current.weatherCode || currentByHour?.weatherCode || null,
+                observationTime: current.localObsDateTime || current.observation_time || null
+            }
         };
     }
 
-    // ===== Утилиты =====
+    normalizeOpenMeteoData(data, locationMeta = {}) {
+        const current = data?.current;
+        const units = data?.current_units || {};
 
-    getWeatherDescription(code) {
-        const codes = {
+        if (!current) {
+            throw new Error('Open-Meteo: нет current');
+        }
+
+        const location = locationMeta.name || this.currentLocation;
+
+        const windUnit = units.wind_speed_10m === 'km/h' ? 'км/ч' : (units.wind_speed_10m || 'км/ч');
+        const windSpeed = this.formatNumberWithUnit(current.wind_speed_10m, windUnit);
+        const windArrow = this.getWindArrowFromDegrees(current.wind_direction_10m);
+
+        return {
+            temp: this.formatNumberWithUnit(current.temperature_2m, units.temperature_2m || '°C', true),
+            feelsLike: this.formatNumberWithUnit(current.apparent_temperature, units.apparent_temperature || '°C', true),
+            description: this.getWeatherDescription(current.weather_code, current.is_day),
+            wind: windSpeed ? `${windSpeed}${windArrow ? ` ${windArrow}` : ''}` : null,
+            humidity: this.formatNumberWithUnit(current.relative_humidity_2m, units.relative_humidity_2m || '%'),
+            location,
+            source: 'Open-Meteo',
+            raw: {
+                provider: 'Open-Meteo',
+                weatherCode: current.weather_code ?? null,
+                observationTime: current.time || null
+            }
+        };
+    }
+
+    findNearestWttrHourly(hourly = [], localObsDateTime) {
+        if (!Array.isArray(hourly) || !hourly.length || !localObsDateTime) return null;
+
+        const hourMatch = String(localObsDateTime).match(/\b(\d{1,2}):(\d{2})\s*(AM|PM)\b/i);
+        if (!hourMatch) return null;
+
+        let hours = parseInt(hourMatch[1], 10);
+        const minutes = parseInt(hourMatch[2], 10);
+        const meridiem = hourMatch[3].toUpperCase();
+
+        if (meridiem === 'PM' && hours !== 12) hours += 12;
+        if (meridiem === 'AM' && hours === 12) hours = 0;
+
+        const currentMinutes = hours * 60 + minutes;
+
+        let nearest = null;
+        let minDiff = Infinity;
+
+        for (const item of hourly) {
+            const rawTime = String(item?.time ?? '').padStart(4, '0');
+            const hh = parseInt(rawTime.slice(0, 2), 10);
+            const mm = parseInt(rawTime.slice(2, 4), 10);
+            const slotMinutes = hh * 60 + mm;
+            const diff = Math.abs(slotMinutes - currentMinutes);
+
+            if (diff < minDiff) {
+                minDiff = diff;
+                nearest = item;
+            }
+        }
+
+        return nearest;
+    }
+
+    // ===== Форматирование =====
+
+    formatTemp(value) {
+        if (value == null || value === '') return null;
+        const num = Number(value);
+        if (Number.isNaN(num)) return null;
+        return `${Math.round(num)}°C`;
+    }
+
+    formatPercent(value) {
+        if (value == null || value === '') return null;
+        const num = Number(value);
+        if (Number.isNaN(num)) return null;
+        return `${Math.round(num)}%`;
+    }
+
+    formatWindKmh(value) {
+        if (value == null || value === '') return null;
+        const num = Number(value);
+        if (Number.isNaN(num)) return null;
+        return `${Math.round(num)} км/ч`;
+    }
+
+    formatNumberWithUnit(value, unit, roundTemp = false) {
+        if (value == null || value === '') return null;
+
+        const num = Number(value);
+        if (Number.isNaN(num)) return null;
+
+        const finalValue = roundTemp ? Math.round(num) : Math.round(num);
+        return `${finalValue}${unit}`;
+    }
+
+    degreesToCompass(deg) {
+        if (deg == null || deg === '' || Number.isNaN(Number(deg))) return '';
+
+        const directions = ['С', 'ССВ', 'СВ', 'ВСВ', 'В', 'ВЮВ', 'ЮВ', 'ЮЮВ', 'Ю', 'ЮЮЗ', 'ЮЗ', 'ЗЮЗ', 'З', 'ЗСЗ', 'СЗ', 'ССЗ'];
+        const index = Math.round(Number(deg) / 22.5) % 16;
+        return directions[index];
+    }
+
+    // ===== Описания =====
+
+    getWeatherDescription(code, isDay = 1) {
+        const dayCodes = {
             0: 'Ясно',
             1: 'Преимущественно ясно',
             2: 'Переменная облачность',
@@ -381,127 +477,201 @@ class WeatherWidget {
             51: 'Легкая морось',
             53: 'Морось',
             55: 'Сильная морось',
+            56: 'Ледяная морось',
+            57: 'Сильная ледяная морось',
             61: 'Небольшой дождь',
             63: 'Дождь',
             65: 'Сильный дождь',
+            66: 'Ледяной дождь',
+            67: 'Сильный ледяной дождь',
             71: 'Небольшой снег',
             73: 'Снег',
             75: 'Сильный снег',
+            77: 'Снежные зерна',
+            80: 'Небольшой ливень',
+            81: 'Ливень',
+            82: 'Сильный ливень',
+            85: 'Небольшой снегопад',
+            86: 'Сильный снегопад',
             95: 'Гроза',
-            96: 'Гроза с градом',
+            96: 'Гроза с небольшим градом',
             99: 'Сильная гроза с градом'
         };
-        return codes[code] || 'Неизвестно';
+
+        const nightCodes = {
+            0: 'Ясная ночь',
+            1: 'Преимущественно ясно',
+            2: 'Переменная облачность',
+            3: 'Пасмурно',
+            45: 'Туман',
+            48: 'Иней',
+            51: 'Легкая морось',
+            53: 'Морось',
+            55: 'Сильная морось',
+            56: 'Ледяная морось',
+            57: 'Сильная ледяная морось',
+            61: 'Небольшой дождь',
+            63: 'Дождь',
+            65: 'Сильный дождь',
+            66: 'Ледяной дождь',
+            67: 'Сильный ледяной дождь',
+            71: 'Небольшой снег',
+            73: 'Снег',
+            75: 'Сильный снег',
+            77: 'Снежные зерна',
+            80: 'Небольшой ливень',
+            81: 'Ливень',
+            82: 'Сильный ливень',
+            85: 'Небольшой снегопад',
+            86: 'Сильный снегопад',
+            95: 'Гроза',
+            96: 'Гроза с небольшим градом',
+            99: 'Сильная гроза с градом'
+        };
+
+        const map = Number(isDay) === 0 ? nightCodes : dayCodes;
+        return map[code] || 'Неизвестно';
+    }
+
+    translateWttrDescription(description) {
+        if (!description) return 'Неизвестно';
+
+        const normalized = description.toLowerCase().trim();
+
+        const map = {
+            'sunny': 'Солнечно',
+            'clear': 'Ясно',
+            'clear ': 'Ясно',
+            'partly cloudy': 'Переменная облачность',
+            'partly cloudy ': 'Переменная облачность',
+            'cloudy': 'Облачно',
+            'cloudy ': 'Облачно',
+            'overcast': 'Пасмурно',
+            'overcast ': 'Пасмурно',
+            'mist': 'Дымка',
+            'fog': 'Туман',
+            'freezing fog': 'Переохлажденный туман',
+            'patchy rain nearby': 'Местами дождь поблизости',
+            'light drizzle': 'Легкая морось',
+            'drizzle': 'Морось',
+            'light rain': 'Небольшой дождь',
+            'moderate rain': 'Дождь',
+            'heavy rain': 'Сильный дождь',
+            'light snow': 'Небольшой снег',
+            'moderate snow': 'Снег',
+            'heavy snow': 'Сильный снег',
+            'moderate or heavy snow showers': 'Умеренные или сильные снежные заряды',
+            'thunderstorm': 'Гроза',
+            'blizzard': 'Метель'
+        };
+
+        return map[normalized] || description.trim();
     }
 
     getWeatherIcon(description) {
         if (!description) return '🌡️';
-        
+
         const desc = description.toLowerCase().trim();
-        
-        // Объединяем карты, сортируем по длине (длинные первыми)
+
         const allMappings = {
-            // Русские — длинные фразы первыми
+            'ясная ночь': '🌙',
             'преимущественно ясно': '🌤️',
             'переменная облачность': '⛅',
             'небольшой дождь': '🌦️',
             'сильный дождь': '🌧️',
-            'гроза с градом': '⛈️',
+            'ледяной дождь': '🌧️',
+            'сильный ледяной дождь': '🌧️',
+            'гроза с небольшим градом': '⛈️',
+            'сильная гроза с градом': '⛈️',
             'небольшой снег': '🌨️',
             'сильный снег': '❄️',
+            'небольшой снегопад': '🌨️',
+            'сильный снегопад': '❄️',
+            'местами дождь поблизости': '🌦️',
+            'умеренные или сильные снежные заряды': '❄️',
+            'солнечно': '☀️',
             'ясно': '☀️',
             'пасмурно': '☁️',
             'облачно': '☁️',
             'туман': '🌫️',
             'дымка': '🌫️',
             'морось': '🌦️',
-            'дождь': '🌧️',
             'ливень': '🌧️',
+            'дождь': '🌧️',
             'гроза': '⛈️',
             'снег': '❄️',
-            'снегопад': '❄️',
-            'ветер': '💨',
-            'пыль': '🌫️',
-            'песчаная буря': '🌪️',
-            
-            // Английские — длинные фразы первыми
-            'mostly clear': '🌤️',
-            'partly cloudy': '⛅',
-            'light drizzle': '🌦️',
-            'moderate rain': '🌧️',
-            'heavy rain': '🌧️',
-            'light rain': '🌦️',
-            'light snow': '🌨️',
-            'heavy snow': '❄️',
-            'thunderstorm': '⛈️',
-            'sandstorm': '🌪️',
-            'clear': '☀️',
-            'sunny': '☀️',
-            'cloudy': '☁️',
-            'overcast': '☁️',
-            'fog': '🌫️',
-            'mist': '🌫️',
-            'haze': '🌫️',
-            'drizzle': '🌦️',
-            'rain': '🌧️',
-            'shower': '🌧️',
-            'thunder': '⛈️',
-            'storm': '⛈️',
-            'snow': '❄️',
-            'blizzard': '❄️',
-            'sleet': '🌨️',
-            'windy': '💨',
-            'breezy': '💨',
-            'wind': '💨',
-            'dust': '🌫️',
-            'sand': '🌫️'
+            'снежные зерна': '🌨️',
+            'метель': '❄️'
         };
-        
-        // Сортируем ключи по длине (убывание) и проверяем
+
         const sortedKeys = Object.keys(allMappings).sort((a, b) => b.length - a.length);
-        
+
         for (const key of sortedKeys) {
             if (desc.includes(key)) {
                 return allMappings[key];
             }
         }
-        
+
         return '🌡️';
+    }
+
+    getWindArrowFromCompass(dir) {
+        if (!dir) return '';
+        
+        const map = {
+            N:'↓', NNE:'↙', NE:'↙', ENE:'↙', E:'←', ESE:'↖', SE:'↖', SSE:'↖',
+            S:'↑', SSW:'↗', SW:'↗', WSW:'↗', W:'→', WNW:'↘', NW:'↘', NNW:'↘',
+            С:'↓', ССВ:'↙', СВ:'↙', ВСВ:'↙', В:'←', ВЮВ:'↖', ЮВ:'↖', ЮЮВ:'↖',
+            Ю:'↑', ЮЮЗ:'↗', ЮЗ:'↗', ЗЮЗ:'↗', З:'→', ЗСЗ:'↘', СЗ:'↘', ССЗ:'↘'
+        };
+        
+        return map[String(dir).trim().toUpperCase()] || '';
+    }
+
+    getWindArrowFromDegrees(deg) {
+        if (deg == null || deg === '' || Number.isNaN(Number(deg))) return '';
+        
+        const arrows = ['↓', '↙', '↙', '↙', '←', '↖', '↖', '↖', '↑', '↗', '↗', '↗', '→', '↘', '↘', '↘'];
+        const idx = Math.round(Number(deg) / 22.5) % 16;
+        
+        return arrows[idx];
     }
 
     // ===== Отображение =====
 
     displayWeather() {
-        const contentDiv = document.getElementById('weatherContent');
-        const locationDiv = document.getElementById('weatherLocation');
+        const contentDiv = this.elements.content;
+        const locationDiv = this.elements.location;
         const weather = this.currentWeather;
-        
+
+        if (!contentDiv || !weather) return;
+
         if (locationDiv) {
             locationDiv.textContent = weather.location || this.currentLocation;
         }
 
-        const updateTimeStr = this.lastUpdate 
+        const updateTimeStr = this.lastUpdate
             ? this.lastUpdate.toLocaleString('ru-RU', {
                 hour: '2-digit',
                 minute: '2-digit'
             })
             : 'кэш';
 
-        // Формируем чипы
         const chips = [];
-        
+
         if (weather.wind) {
             chips.push(`<span class="weather-chip"><span class="weather-chip-icon">💨</span>${weather.wind}</span>`);
         }
+
         if (weather.humidity) {
             chips.push(`<span class="weather-chip"><span class="weather-chip-icon">💧</span>${weather.humidity}</span>`);
         }
+
         if (weather.feelsLike && weather.feelsLike !== weather.temp) {
             chips.push(`<span class="weather-chip"><span class="weather-chip-icon">🌡️</span>ощущается ${weather.feelsLike}</span>`);
         }
 
-        // Определяем цвет температуры
-        const tempNum = parseInt(weather.temp);
+        const tempNum = parseInt(weather.temp, 10);
         let tempColor = 'var(--text-primary)';
         if (tempNum > 25) tempColor = '#ff7a7a';
         else if (tempNum < 0) tempColor = '#7ab0ff';
@@ -512,7 +682,7 @@ class WeatherWidget {
                 <div class="weather-temp-row">
                     <span class="weather-temp" style="color: ${tempColor}">${weather.temp} ${this.getWeatherIcon(weather.description)}</span>
                 </div>
-                <div class="weather-desc">${weather.description}</div>
+                <div class="weather-desc">${weather.description || 'Неизвестно'}</div>
                 ${chips.length ? `<div class="weather-details">${chips.join('')}</div>` : ''}
             </div>
             <div class="weather-meta">
@@ -522,7 +692,7 @@ class WeatherWidget {
         `;
     }
 
-    // ===== Обработчики событий =====
+    // ===== События =====
 
     handleSetLocation() {
         this.showLocationPrompt();

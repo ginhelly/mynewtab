@@ -164,27 +164,14 @@ function initApp() {
     });
     clock.start();
 
-    const search = new SearchModule({
-        maxHistory: 10,
-        shortcuts: true
-    });
+    // 2. Поиск
+    const search = new SearchModule();
     search.init();
-
-    document.querySelectorAll('.search-button[data-engine]').forEach(btn => {
-        const engine = btn.dataset.engine;
-        btn.addEventListener('click', () => {
-            const query = document.getElementById('searchInput')?.value || '';
-            if (query.trim()) {
-                search.search(query, engine);
-            } else {
-                document.getElementById('searchInput')?.focus();
-            }
-        });
-    });
 
     const weather = new WeatherWidget({
         defaultLocation: CONFIG.defaultWeatherLocation,
-        cacheMaxAge: 24 * 60 * 60 * 1000
+        cacheMaxAge: 24 * 60 * 60 * 1000,
+        isLocalBrowser: locationDetector.getStatus()
     });
     weather.init();
 

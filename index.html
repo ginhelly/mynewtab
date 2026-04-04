@@ -27,18 +27,26 @@
 
             <!-- Поиск -->
             <div class="input-section">
-                <form action="https://duckduckgo.com/" method="GET">
+                <form id="searchForm" method="GET" class="search-form">
+                    <span class="search-input-icon-wrap">
+                        <img id="searchEngineIcon" class="search-input-icon" src="images/duck-small.webp" alt="">
+                    </span>
+
                     <input 
-                        type="search" 
-                        id="searchInput" 
-                        name="q" 
+                        type="search"
+                        id="searchInput"
                         autocomplete="off"
-                        placeholder="Поиск в DuckDuckGo..."
+                        placeholder="Искать в DuckDuckGo..."
                         aria-label="Поисковый запрос"
                     >
-                    <input type="submit" hidden value="DuckDuckGo">
+
+                    <input type="submit" hidden value="Поиск">
                 </form>
                 <div class="buttons">
+                    <button class="search-button active" data-engine="duckduckgo" type="button">
+                        <img src="images/duck-small.webp" alt="" class="btn-logo">
+                        DuckDuckGo
+                    </button>
                     <button class="search-button" data-engine="google" type="button">
                         <img src="images/google-small.webp" alt="" class="btn-logo">
                         Google

@@ -1,256 +1,213 @@
 /**
- * Модуль поиска с поддержкой multiple search engines
- * Горячие клавиши, история поиска
+ * Модуль поиска с поддержкой нескольких движков
  */
 
 class SearchModule {
-    constructor(options = {}) {
-        this.options = {
-            historyKey: options.historyKey || 'search_history',
-            maxHistory: options.maxHistory || 10,
-            shortcuts: options.shortcuts !== false, // true по умолчанию
-            ...options
-        };
+    constructor() {
+        this.storageKey = 'search_engine';
+        this.defaultEngine = 'duckduckgo';
+        this.currentEngine = this.defaultEngine;
 
-        this.engines = {
+        this.searchInput = document.getElementById('searchInput');
+        this.searchForm = document.getElementById('searchForm');
+        this.engineButtons = document.querySelectorAll('.search-button[data-engine]');
+        this.searchEngineIcon = document.getElementById('searchEngineIcon');
+
+        this.engineConfig = {
             duckduckgo: {
-                name: 'DuckDuckGo',
                 url: 'https://duckduckgo.com/',
-                param: 'q',
-                icon: 'images/duck-small.webp'
+                placeholder: 'Поиск в DuckDuckGo...',
+                icon: 'images/duck-small.webp',
+                param: 'q'
             },
             google: {
-                name: 'Google',
                 url: 'https://www.google.com/search',
-                param: 'q',
-                icon: 'images/google-small.webp'
+                placeholder: 'Поиск в Google...',
+                icon: 'images/google-small.webp',
+                param: 'q'
             },
             youtube: {
-                name: 'YouTube',
                 url: 'https://www.youtube.com/results',
-                param: 'search_query',
-                icon: 'images/youtube.webp'
+                placeholder: 'Поиск в YouTube...',
+                icon: 'images/youtube.webp',
+                param: 'search_query'
             },
             yandex: {
-                name: 'Yandex',
-                url: 'https://ya.ru/search/',
-                param: 'text',
-                icon: 'images/yandex.webp'
+                url: 'https://yandex.ru/search/',
+                placeholder: 'Поиск в Yandex...',
+                icon: 'images/yandex.webp',
+                param: 'text'
             },
             yamaps: {
-                name: 'Yandex Maps',
-                url: 'https://yandex.ru/maps/44/izhevsk/search/',
-                param: 'text',
-                icon: 'images/yamaps.webp'
+                url: 'https://yandex.ru/maps/',
+                placeholder: 'Поиск на Яндекс.Картах...',
+                icon: 'images/yamaps.webp',
+                param: 'text'
             }
         };
 
-        this.currentEngine = 'duckduckgo';
-        this.history = [];
-
-        // DOM элементы
-        this.elements = {
-            input: document.getElementById('searchInput'),
-            form: document.querySelector('form[action*="duckduckgo"]')
-        };
-
-        // Привязка методов
-        this.handleKeydown = this.handleKeydown.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+        this.handleEngineClick = this.handleEngineClick.bind(this);
+        this.handleEngineMouseDown = this.handleEngineMouseDown.bind(this);
+        this.handleInputKeydown = this.handleInputKeydown.bind(this);
     }
 
-    /**
-     * Инициализация модуля
-     */
     init() {
-        this.loadHistory();
+        this.loadCurrentEngine();
+        this.updateUI();
         this.bindEvents();
-        this.setupForm();
     }
 
-    /**
-     * Привязка событий
-     */
-    bindEvents() {
-        if (this.elements.input) {
-            this.elements.input.addEventListener('keydown', this.handleKeydown);
-        }
-
-        if (this.elements.form) {
-            this.elements.form.addEventListener('submit', this.handleSubmit);
-        }
-
-        // Глобальные горячие клавиши
-        if (this.options.shortcuts) {
-            document.addEventListener('keydown', (e) => this.handleGlobalShortcut(e));
-        }
-    }
-
-    /**
-     * Уничтожение модуля
-     */
     destroy() {
-        if (this.elements.input) {
-            this.elements.input.removeEventListener('keydown', this.handleKeydown);
-        }
-        if (this.elements.form) {
-            this.elements.form.removeEventListener('submit', this.handleSubmit);
-        }
-    }
-
-    // ===== Настройка формы =====
-
-    setupForm() {
-        if (!this.elements.form || !this.elements.input) return;
-
-        // Устанавливаем action формы в соответствии с текущим движком
-        const engine = this.engines[this.currentEngine];
-        this.elements.form.action = engine.url;
-        this.elements.input.name = engine.param;
-        
-        // Placeholder с подсказкой
-        this.elements.input.placeholder = `Поиск в ${engine.name}...`;
-    }
-
-    // ===== Поиск =====
-
-    search(query, engineKey = null) {
-        const trimmed = query.trim();
-        if (!trimmed) return;
-
-        // Сохраняем в историю
-        this.addToHistory(trimmed);
-
-        const engine = engineKey ? this.engines[engineKey] : this.engines[this.currentEngine];
-        if (!engine) return;
-
-        const encodedQuery = encodeURIComponent(trimmed);
-        const url = engine.param === 'text' && engineKey === 'yamaps'
-            ? `${engine.url}${encodedQuery}` // Yandex Maps использует path, не query param
-            : `${engine.url}?${engine.param}=${encodedQuery}`;
-
-        window.location.href = url;
-    }
-
-    setEngine(engineKey) {
-        if (!this.engines[engineKey]) {
-            console.error(`[Search] Неизвестный движок: ${engineKey}`);
-            return;
+        if (this.searchForm) {
+            this.searchForm.removeEventListener('submit', this.handleFormSubmit);
         }
 
-        this.currentEngine = engineKey;
-        this.setupForm();
-        
-        // Обновляем визуальную индикацию если есть
-        this.updateEngineIndicator();
+        if (this.searchInput) {
+            this.searchInput.removeEventListener('keydown', this.handleInputKeydown);
+        }
+
+        this.engineButtons.forEach(btn => {
+            btn.removeEventListener('click', this.handleEngineClick);
+            btn.removeEventListener('mousedown', this.handleEngineMouseDown);
+        });
     }
 
-    // ===== История =====
+    bindEvents() {
+        if (this.searchForm) {
+            this.searchForm.addEventListener('submit', this.handleFormSubmit);
+        }
 
-    loadHistory() {
+        this.engineButtons.forEach(btn => {
+            btn.addEventListener('click', this.handleEngineClick);
+            btn.addEventListener('mousedown', this.handleEngineMouseDown);
+        });
+
+        if (this.searchInput) {
+            this.searchInput.addEventListener('keydown', this.handleInputKeydown);
+        }
+    }
+
+    handleFormSubmit(e) {
+        e.preventDefault();
+        const query = this.getQuery();
+        if (query) {
+            this.search(query);
+        }
+    }
+
+    handleEngineClick(e) {
+        const button = e.currentTarget;
+        const engine = button?.dataset?.engine;
+
+        if (!engine || !this.engineConfig[engine]) return;
+
+        const query = this.getQuery();
+
+        this.setCurrentEngine(engine);
+
+        if (query) {
+            this.search(query, engine);
+        } else {
+            this.searchInput?.focus();
+        }
+    }
+
+    handleEngineMouseDown(e) {
+        if (e.button !== 1) return;
+        e.preventDefault();
+        e.stopPropagation();
+
+        const button = e.currentTarget;
+        const engine = button?.dataset?.engine;
+        const query = this.getQuery();
+
+        if (!engine || !this.engineConfig[engine]) return;
+
+        if (query) {
+            // Ищем в движке, на котором кликнули, но НЕ меняем текущий
+            this.search(query, engine, true);
+        }
+        // Если запрос пустой — ничего не делаем, просто игнорируем клик
+    }
+
+    handleInputKeydown(e) {
+        if (e.key === 'Enter' && !this.getQuery()) {
+            e.preventDefault();
+        }
+    }
+
+    getQuery() {
+        return this.searchInput?.value.trim() || '';
+    }
+
+    setCurrentEngine(engine) {
+        if (!this.engineConfig[engine]) return;
+
+        this.currentEngine = engine;
+        this.saveCurrentEngine();
+        this.updateUI();
+    }
+
+    updateUI() {
+        const config = this.engineConfig[this.currentEngine];
+        if (!config) return;
+
+        if (this.searchForm) {
+            this.searchForm.action = config.url;
+            this.searchForm.method = 'GET';
+        }
+
+        if (this.searchInput) {
+            this.searchInput.placeholder = config.placeholder;
+            this.searchInput.name = config.param;
+        }
+
+        if (this.searchEngineIcon) {
+            this.searchEngineIcon.src = config.icon;
+        }
+
+        this.engineButtons.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.engine === this.currentEngine);
+        });
+    }
+
+    search(query, overrideEngine = null, forceNewTab = false) {
+        const engine = overrideEngine || this.currentEngine;
+        const config = this.engineConfig[engine];
+
+        if (!config || !query) return;
+
+        const url = `${config.url}?${config.param}=${encodeURIComponent(query)}`;
+
+        if (forceNewTab) {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        } else {
+            window.location.href = url;
+        }
+    }
+
+    saveCurrentEngine() {
         try {
-            const saved = localStorage.getItem(this.options.historyKey);
-            this.history = saved ? JSON.parse(saved) : [];
+            localStorage.setItem(this.storageKey, this.currentEngine);
         } catch (e) {
-            console.error('[Search] Ошибка загрузки истории:', e);
-            this.history = [];
+            console.error('[Search] Ошибка сохранения:', e);
         }
     }
 
-    saveHistory() {
+    loadCurrentEngine() {
         try {
-            localStorage.setItem(this.options.historyKey, JSON.stringify(this.history));
-        } catch (e) {
-            console.error('[Search] Ошибка сохранения истории:', e);
-        }
-    }
-
-    addToHistory(query) {
-        // Удаляем дубликаты
-        this.history = this.history.filter(item => item.toLowerCase() !== query.toLowerCase());
-        
-        // Добавляем в начало
-        this.history.unshift(query);
-        
-        // Ограничиваем размер
-        if (this.history.length > this.options.maxHistory) {
-            this.history = this.history.slice(0, this.options.maxHistory);
-        }
-        
-        this.saveHistory();
-    }
-
-    clearHistory() {
-        this.history = [];
-        localStorage.removeItem(this.options.historyKey);
-    }
-
-    getSuggestions(partial) {
-        if (!partial || partial.length < 2) return [];
-        
-        const lower = partial.toLowerCase();
-        return this.history
-            .filter(item => item.toLowerCase().includes(lower))
-            .slice(0, 5);
-    }
-
-    // ===== Обработчики =====
-
-    handleKeydown(event) {
-        // Tab для переключения движков
-        if (event.key === 'Tab' && event.ctrlKey) {
-            event.preventDefault();
-            this.cycleEngine();
-        }
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        this.search(this.elements.input.value);
-    }
-
-    handleGlobalShortcut(event) {
-        // / или Ctrl+K для фокуса на поиск
-        if (event.key === '/' || (event.ctrlKey && event.key === 'k')) {
-            // Не срабатываем если пользователь печатает в input
-            if (document.activeElement.tagName === 'INPUT' || 
-                document.activeElement.tagName === 'TEXTAREA') {
-                return;
+            const saved = localStorage.getItem(this.storageKey);
+            if (saved && this.engineConfig[saved]) {
+                this.currentEngine = saved;
+            } else {
+                this.currentEngine = this.defaultEngine;
             }
-            
-            event.preventDefault();
-            this.elements.input?.focus();
-            this.elements.input?.select();
-        }
-
-        // Escape для сброса
-        if (event.key === 'Escape' && document.activeElement === this.elements.input) {
-            this.elements.input.value = '';
-            this.elements.input.blur();
+        } catch (e) {
+            console.error('[Search] Ошибка загрузки:', e);
+            this.currentEngine = this.defaultEngine;
         }
     }
-
-    // ===== Утилиты =====
-
-    cycleEngine() {
-        const keys = Object.keys(this.engines);
-        const currentIndex = keys.indexOf(this.currentEngine);
-        const nextIndex = (currentIndex + 1) % keys.length;
-        this.setEngine(keys[nextIndex]);
-    }
-
-    updateEngineIndicator() {
-        // Можно добавить визуальную индикацию текущего движка
-        const engine = this.engines[this.currentEngine];
-        console.log(`[Search] Текущий движок: ${engine.name}`);
-    }
-
-    // ===== Публичные методы для кнопок =====
-
-    searchGoogle() { this.search(this.elements.input?.value, 'google'); }
-    searchYoutube() { this.search(this.elements.input?.value, 'youtube'); }
-    searchYandex() { this.search(this.elements.input?.value, 'yandex'); }
-    searchYamaps() { this.search(this.elements.input?.value, 'yamaps'); }
 }
 
 export default SearchModule;
