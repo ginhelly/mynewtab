@@ -45,6 +45,20 @@ function updateSectionsHighlight(isLocal, source) {
     }
 }
 
+function enableCardLinks() {
+    document.querySelectorAll('.card').forEach(card => {
+        const link = card.querySelector('a');
+        if (!link) return;
+
+        card.style.cursor = 'pointer';
+
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            link.click();
+        });
+    });
+}
+
 class NetworkWidget {
     constructor(detector) {
         this.element = document.getElementById('myIP');
@@ -151,7 +165,8 @@ class NetworkWidget {
 function initApp() {
     const initialStatus = locationDetector.detectLocalBrowser();
     updateSectionsHighlight(initialStatus, locationDetector.getSource());
-    
+    enableCardLinks();
+
     locationDetector.subscribe((isLocal, source) => {
         if (source === 'network') {
             updateSectionsHighlight(isLocal, source);
